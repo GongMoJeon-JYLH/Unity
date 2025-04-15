@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Net.Http;
 using System.Text;
@@ -35,6 +36,7 @@ public struct LoginData
 public struct ChatData
 {
     public string userMessage;
+    public string idNum;
 }
 
 // 응답 데이터 구조들
@@ -43,6 +45,13 @@ public struct ChatResponse
 {
     public string responseText;
 }
+
+[System.Serializable]
+public struct BookListResponse
+{
+    public BookResponse[] recommendations;
+}
+
 
 [System.Serializable]
 public struct BookResponse
@@ -57,15 +66,12 @@ public struct BookResponse
 public class HttpManager : MonoBehaviour
 {
     public GameObject nameBox;
+    public GameObject idNumBox;
     public GameObject inputBox;
     public GameObject outputBox;
     public Image coverImage;
-    string server = "";
+    public string server = ""; // 에디터에서 조정 
 
-    private void Start()
-    {
-        server = "";
-    }
 
     #region 버튼에 붙는 함수들
 
@@ -102,12 +108,13 @@ public class HttpManager : MonoBehaviour
 
         ChatData chatData = new ChatData
         {
-            userMessage = userMessage
+            userMessage = userMessage,
+            idNum = idNumBox.GetComponent<TMP_InputField>().text
         };
 
         HttpInfo info = new HttpInfo
         {
-            url = server,
+            url = server + "/chat",
             method = "POST",
             body = JsonUtility.ToJson(chatData),
             contentType = "application/json",
@@ -124,20 +131,42 @@ public class HttpManager : MonoBehaviour
 
     public void OnClickGetBookRecommendation()
     {
+        LoginData loginData = new LoginData
+        {
+            name = nameBox.GetComponent<TMP_InputField>().text,
+            idNum = Convert.ToInt32(idNumBox.GetComponent<TMP_InputField>().text)
+        };
+
         HttpInfo info = new HttpInfo
         {
-            url = server,
-            method = "GET",
-            responseType = ResponseType.Book
+            url = server + "/book-recommend",
+            method = "POST",
+            responseType = ResponseType.Book,
+            body = JsonUtility.ToJson(loginData),
+            contentType= "application/json"
         };
+
+        Debug.Log(info.url);
 
         StartCoroutine(SendRequest(info, result =>
         {
-            BookResponse book = (BookResponse)result;
-            outputBox.GetComponent<TextMeshProUGUI>().text = book.bookTitle + " ------ " + book.bookReason;
-            StartCoroutine(LoadImageFromUrl(book.imageUrl));
+            BookResponse[] books = (BookResponse[])result;
+
+            StringBuilder sb = new StringBuilder();
+            foreach (BookResponse book in books)
+            {
+                sb.AppendLine($"<b>{book.bookTitle}</b>\n{book.bookReason}\n");
+            }
+
+            outputBox.GetComponent<TextMeshProUGUI>().text = sb.ToString();
+
+            Debug.Log(books[0].imageUrl);
+
+            // 첫 번째 책 커버만 표시
+            StartCoroutine(LoadImageFromUrl(books[0].imageUrl));
         }));
     }
+
     #endregion
 
     private IEnumerator LoadImageFromUrl(string url)
@@ -155,8 +184,6 @@ public class HttpManager : MonoBehaviour
             Debug.LogError("이미지 불러오기 실패: " + request.error);
         }
     }
-
-
 
     #region 통신 관련 함수
     // 요청에 따라 응답 타입 다름 -> DoneRequest 대신 Callback(onSuccess) 사용 
@@ -192,8 +219,8 @@ public class HttpManager : MonoBehaviour
                     onSuccess?.Invoke(chat);
                     break;
                 case ResponseType.Book:
-                    BookResponse book = JsonUtility.FromJson<BookResponse>(request.downloadHandler.text);
-                    onSuccess?.Invoke(book);
+                    BookListResponse bookList = JsonUtility.FromJson<BookListResponse>(request.downloadHandler.text);
+                    onSuccess?.Invoke(bookList.recommendations);
                     break;
                 default:
                     Debug.Log("응답 타입 없음");
