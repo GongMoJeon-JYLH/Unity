@@ -10,6 +10,7 @@ using AOT;
 using System.Runtime.InteropServices; // for DllImport
 using System.Collections;
 using UnityEngine.EventSystems;
+using TMPro;
 
 namespace WebGLSupport
 {
@@ -134,8 +135,16 @@ namespace WebGLSupport
             if (GetComponent<InputField>()) return new WrappedInputField(GetComponent<InputField>());
 
             if (GetComponent<WebGLUIToolkitTextField>()) return new WrappedUIToolkit(GetComponent<WebGLUIToolkitTextField>());
+
+            var tmpInputField = GetComponent<TMP_InputField>();
+            if (tmpInputField == null) Debug.LogError("TMP_InputField not found");
+
+
 #if TMP_WEBGL_SUPPORT
-            if (GetComponent<TMPro.TMP_InputField>()) return new WrappedTMPInputField(GetComponent<TMPro.TMP_InputField>());
+            if (GetComponent<TMP_InputField>())
+            {
+                return new WrappedTMPInputField(GetComponent<TMP_InputField>());
+            }
 #endif // TMP_WEBGL_SUPPORT
 
             throw new Exception("Can not Setup WebGLInput!!");
