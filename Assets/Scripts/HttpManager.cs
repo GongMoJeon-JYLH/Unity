@@ -25,25 +25,32 @@ public struct HttpInfo
 }
 
 // 요청 데이터 구조들
-[System.Serializable]
+[System.Serializable] 
 public struct LoginData
 {
     public string name;
-    public int idNum;
 }
 
 [System.Serializable]
 public struct ChatData
 {
     public string userMessage;
-    public string idNum;
+    public string userId;
 }
 
 // 응답 데이터 구조들
 [System.Serializable]
+public struct FullLoginData
+{
+    public string name;
+    public string userId;
+}
+
+[System.Serializable]
 public struct ChatResponse
 {
     public string responseText;
+    public bool canRecommend;
 }
 
 [System.Serializable]
@@ -52,7 +59,6 @@ public struct BookListResponse
     public BookResponse[] recommendations;
 }
 
-
 [System.Serializable]
 public struct BookResponse
 {
@@ -60,6 +66,8 @@ public struct BookResponse
     public string bookReason;
     public string imageUrl;
     public string bookUrl;
+    public string bookSummary;
+    public string bookGenre;
 }
 
 
@@ -72,20 +80,26 @@ public class HttpManager : MonoBehaviour
     public Image coverImage;
     public string server = ""; // 에디터에서 조정 
 
+    // UserInfo
+    FullLoginData thisUserInfo = new FullLoginData
+    {
+        name = "",
+        userId = ""
+    };
 
     #region 버튼에 붙는 함수들
 
-    public void OnClickSendUserIdAndUserNum()
+    // 입력한 닉네임 보내고 서버로부터 고유번호 받음
+    public void OnClickSendUserIdAndGetUserNum()
     {
         LoginData loginData = new LoginData
         {
             name = nameBox.GetComponent<TMP_InputField>().text,
-            idNum = 1
         };
 
         HttpInfo info = new HttpInfo
         {
-            url = server,
+            url = server + "/users",
             method = "POST",
             body = JsonUtility.ToJson(loginData),
             contentType = "application/json",
@@ -95,9 +109,20 @@ public class HttpManager : MonoBehaviour
         StartCoroutine(SendRequest(info, result =>
         {
             Debug.Log("유저 정보 잘 보내졌다");
+
+            if (result == null)
+            {
+                Debug.LogError("응답이 null입니다.");
+                return;
+            }
+
+            FullLoginData response = (FullLoginData)result;
+            thisUserInfo.name = response.name;
+            thisUserInfo.userId = response.userId;
         }));
     }
 
+    // 챗을 보내고 답변을 받음
     public void OnClickSendChat()
     {
         string userMessage = inputBox.GetComponent<TMP_InputField>().text;
@@ -109,7 +134,7 @@ public class HttpManager : MonoBehaviour
         ChatData chatData = new ChatData
         {
             userMessage = userMessage,
-            idNum = idNumBox.GetComponent<TMP_InputField>().text
+            userId = thisUserInfo.userId
         };
 
         HttpInfo info = new HttpInfo
@@ -125,24 +150,19 @@ public class HttpManager : MonoBehaviour
         {
             ChatResponse response = (ChatResponse)result;
             outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
+            Debug.Log(response.canRecommend);
         }));
     }
 
-
+    // 로그인 데이터를 보내고 책 추천을 받아옴
     public void OnClickGetBookRecommendation()
     {
-        LoginData loginData = new LoginData
-        {
-            name = nameBox.GetComponent<TMP_InputField>().text,
-            idNum = Convert.ToInt32(idNumBox.GetComponent<TMP_InputField>().text)
-        };
-
         HttpInfo info = new HttpInfo
         {
             url = server + "/book-recommend",
             method = "POST",
             responseType = ResponseType.Book,
-            body = JsonUtility.ToJson(loginData),
+            body = JsonUtility.ToJson(thisUserInfo),
             contentType= "application/json"
         };
 
@@ -162,13 +182,14 @@ public class HttpManager : MonoBehaviour
 
             Debug.Log(books[0].imageUrl);
 
-            // 첫 번째 책 커버만 표시
+            // 일단은 첫 번째 책 커버만 표시
             StartCoroutine(LoadImageFromUrl(books[0].imageUrl));
         }));
     }
 
     #endregion
 
+    // 이미지 URL 을 받아와 이미지로 로드
     private IEnumerator LoadImageFromUrl(string url)
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
@@ -212,7 +233,8 @@ public class HttpManager : MonoBehaviour
             switch (info.responseType)
             {
                 case ResponseType.UserInfo:
-                    onSuccess?.Invoke(null); 
+                    FullLoginData fullLoginData = JsonUtility.FromJson<FullLoginData>(request.downloadHandler.text);
+                    onSuccess?.Invoke(fullLoginData); 
                     break;
                 case ResponseType.Chat:
                     ChatResponse chat = JsonUtility.FromJson<ChatResponse>(request.downloadHandler.text);
