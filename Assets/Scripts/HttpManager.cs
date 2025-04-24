@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public enum ResponseType
 {
@@ -25,67 +26,115 @@ public struct HttpInfo
 }
 
 // 요청 데이터 구조들
-[System.Serializable]
+[System.Serializable] 
 public struct LoginData
 {
     public string name;
-    public int idNum;
 }
 
 [System.Serializable]
 public struct ChatData
 {
     public string userMessage;
-    public string idNum;
+    public string userId;
 }
 
 // 응답 데이터 구조들
 [System.Serializable]
+public struct FullLoginData
+{
+    public string name;
+    public string userId;
+}
+
+[System.Serializable]
 public struct ChatResponse
 {
     public string responseText;
+    public bool canRecommend;
 }
 
 [System.Serializable]
 public struct BookListResponse
 {
     public BookResponse[] recommendations;
+    public string[] keywords;
+    public string userType;
+    public string userTypeReason;
 }
-
 
 [System.Serializable]
 public struct BookResponse
 {
     public string bookTitle;
-    public string bookReason;
+    public string bookKeyword;
     public string imageUrl;
     public string bookUrl;
+    public string bookSummary;
+    public string bookGenre;
 }
 
 
 public class HttpManager : MonoBehaviour
 {
+    private static HttpManager instance = null;
+
+    void Awake()
+    {
+        if (null == instance)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    public static HttpManager Instance
+    {
+        get
+        {
+            if (null == instance)
+            {
+                return null;
+            }
+            return instance;
+        }
+    }
+
     public GameObject nameBox;
-    public GameObject idNumBox;
     public GameObject inputBox;
     public GameObject outputBox;
-    public Image coverImage;
+    public UnityEngine.UI.Button btn_expand;
+    public UnityEngine.UI.Button btn_getRec;
+    public ToggleSetting toggleSetting;
+
+    public UnityEngine.UI.Image[] coverImages;
+
     public string server = ""; // 에디터에서 조정 
 
+    // UserInfo
+    FullLoginData thisUserInfo = new FullLoginData
+    {
+        name = "",
+        userId = ""
+    };
 
     #region 버튼에 붙는 함수들
 
-    public void OnClickSendUserIdAndUserNum()
+    // 입력한 닉네임 보내고 서버로부터 고유번호 받음
+    public void OnClickSendUserIdAndGetUserNum()
     {
         LoginData loginData = new LoginData
         {
             name = nameBox.GetComponent<TMP_InputField>().text,
-            idNum = 1
         };
 
         HttpInfo info = new HttpInfo
         {
-            url = server,
+            url = server + "/users",
             method = "POST",
             body = JsonUtility.ToJson(loginData),
             contentType = "application/json",
@@ -95,9 +144,20 @@ public class HttpManager : MonoBehaviour
         StartCoroutine(SendRequest(info, result =>
         {
             Debug.Log("유저 정보 잘 보내졌다");
+
+            if (result == null)
+            {
+                Debug.LogError("응답이 null입니다.");
+                return;
+            }
+
+            FullLoginData response = (FullLoginData)result;
+            thisUserInfo.name = response.name;
+            thisUserInfo.userId = response.userId;
         }));
     }
 
+    // 챗을 보내고 답변을 받음
     public void OnClickSendChat()
     {
         string userMessage = inputBox.GetComponent<TMP_InputField>().text;
@@ -109,7 +169,7 @@ public class HttpManager : MonoBehaviour
         ChatData chatData = new ChatData
         {
             userMessage = userMessage,
-            idNum = idNumBox.GetComponent<TMP_InputField>().text
+            userId = thisUserInfo.userId
         };
 
         HttpInfo info = new HttpInfo
@@ -125,63 +185,84 @@ public class HttpManager : MonoBehaviour
         {
             ChatResponse response = (ChatResponse)result;
             outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
+            if (response.canRecommend)
+            {
+                btn_getRec.interactable = true;
+            }
+            
         }));
     }
 
+    // 받아온 책 추천 일단 배열로 저장, 그 외 업데이트할 나머지 UI 요소들도 받아옴
+    public BookResponse[] books = new BookResponse[3];
+    public UnityEngine.UI.Image coverImage;
 
+
+    // 로그인 데이터를 보내고 책 추천을 받아옴
     public void OnClickGetBookRecommendation()
     {
-        LoginData loginData = new LoginData
-        {
-            name = nameBox.GetComponent<TMP_InputField>().text,
-            idNum = Convert.ToInt32(idNumBox.GetComponent<TMP_InputField>().text)
-        };
-
         HttpInfo info = new HttpInfo
         {
             url = server + "/book-recommend",
             method = "POST",
             responseType = ResponseType.Book,
-            body = JsonUtility.ToJson(loginData),
+            body = JsonUtility.ToJson(thisUserInfo),
             contentType= "application/json"
         };
 
-        Debug.Log(info.url);
-
         StartCoroutine(SendRequest(info, result =>
         {
-            BookResponse[] books = (BookResponse[])result;
+            btn_expand.interactable = true;
+            books = (BookResponse[])result;
 
-            StringBuilder sb = new StringBuilder();
-            foreach (BookResponse book in books)
+            toggleSetting.SetBookUI(0, coverImage);
+            StartCoroutine(LoadImageFromUrl(books[0].imageUrl, coverImage));
+
+            //StringBuilder sb = new StringBuilder();
+            //foreach (BookResponse book in books)
+            //{
+            //    sb.AppendLine($"<b>책 장르</b> : {book.bookGenre}\n<b>추천이유</b> : {book.bookReason}\n<b>내용 요약</b> : {book.bookSummary}\n<b>링크</b> :{book.bookUrl}\n<b>링크</b> :{book.bookUrl}");
+            //}
+
+            //outputBox.GetComponent<TextMeshProUGUI>().text = sb.ToString();
+
+            //Debug.Log(books[0].imageUrl);
+
+            for (int i = 0; i < books.Length; i++)
             {
-                sb.AppendLine($"<b>{book.bookTitle}</b>\n{book.bookReason}\n");
+                var book = books[i];
+                StartCoroutine(LoadImageFromUrl(book.imageUrl, coverImages[i]));
+                coverImages[i].transform.GetChild(1).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; // 나중에 작가 이름 더하기 ////////////////
             }
-
-            outputBox.GetComponent<TextMeshProUGUI>().text = sb.ToString();
-
-            Debug.Log(books[0].imageUrl);
-
-            // 첫 번째 책 커버만 표시
-            StartCoroutine(LoadImageFromUrl(books[0].imageUrl));
         }));
     }
 
     #endregion
 
-    private IEnumerator LoadImageFromUrl(string url)
+    // 이미지 URL 을 받아와 이미지로 로드
+    public IEnumerator LoadImageFromUrl(string url, UnityEngine.UI.Image coverImage)
     {
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
-        yield return request.SendWebRequest();
+        // 프로토콜을 https로 강제 변경
+        if (url.StartsWith("http://"))
+            url = "https://" + url.Substring(7);
 
-        if (request.result == UnityWebRequest.Result.Success)
+        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
         {
-            Texture2D texture = DownloadHandlerTexture.GetContent(request);
-            coverImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-        }
-        else
-        {
-            Debug.LogError("이미지 불러오기 실패: " + request.error);
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                coverImage.sprite = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+            }
+            else
+            {
+                Debug.LogError($"이미지 불러오기 실패: {request.error}");
+            }
         }
     }
 
@@ -212,7 +293,8 @@ public class HttpManager : MonoBehaviour
             switch (info.responseType)
             {
                 case ResponseType.UserInfo:
-                    onSuccess?.Invoke(null); 
+                    FullLoginData fullLoginData = JsonUtility.FromJson<FullLoginData>(request.downloadHandler.text);
+                    onSuccess?.Invoke(fullLoginData); 
                     break;
                 case ResponseType.Chat:
                     ChatResponse chat = JsonUtility.FromJson<ChatResponse>(request.downloadHandler.text);
