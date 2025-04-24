@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public enum ResponseType
 {
@@ -57,13 +58,16 @@ public struct ChatResponse
 public struct BookListResponse
 {
     public BookResponse[] recommendations;
+    public string[] keywords;
+    public string userType;
+    public string userTypeReason;
 }
 
 [System.Serializable]
 public struct BookResponse
 {
     public string bookTitle;
-    public string bookReason;
+    public string bookKeyword;
     public string imageUrl;
     public string bookUrl;
     public string bookSummary;
@@ -73,11 +77,42 @@ public struct BookResponse
 
 public class HttpManager : MonoBehaviour
 {
+    private static HttpManager instance = null;
+
+    void Awake()
+    {
+        if (null == instance)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    public static HttpManager Instance
+    {
+        get
+        {
+            if (null == instance)
+            {
+                return null;
+            }
+            return instance;
+        }
+    }
+
     public GameObject nameBox;
-    public GameObject idNumBox;
     public GameObject inputBox;
     public GameObject outputBox;
-    public Image coverImage;
+    public UnityEngine.UI.Button btn_expand;
+    public UnityEngine.UI.Button btn_getRec;
+    public ToggleSetting toggleSetting;
+
+    public UnityEngine.UI.Image[] coverImages;
+
     public string server = ""; // 에디터에서 조정 
 
     // UserInfo
@@ -150,9 +185,18 @@ public class HttpManager : MonoBehaviour
         {
             ChatResponse response = (ChatResponse)result;
             outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
-            Debug.Log(response.canRecommend);
+            if (response.canRecommend)
+            {
+                btn_getRec.interactable = true;
+            }
+            
         }));
     }
+
+    // 받아온 책 추천 일단 배열로 저장, 그 외 업데이트할 나머지 UI 요소들도 받아옴
+    public BookResponse[] books = new BookResponse[3];
+    public UnityEngine.UI.Image coverImage;
+
 
     // 로그인 데이터를 보내고 책 추천을 받아옴
     public void OnClickGetBookRecommendation()
@@ -166,43 +210,59 @@ public class HttpManager : MonoBehaviour
             contentType= "application/json"
         };
 
-        Debug.Log(info.url);
-
         StartCoroutine(SendRequest(info, result =>
         {
-            BookResponse[] books = (BookResponse[])result;
+            btn_expand.interactable = true;
+            books = (BookResponse[])result;
 
-            StringBuilder sb = new StringBuilder();
-            foreach (BookResponse book in books)
+            toggleSetting.SetBookUI(0, coverImage);
+            StartCoroutine(LoadImageFromUrl(books[0].imageUrl, coverImage));
+
+            //StringBuilder sb = new StringBuilder();
+            //foreach (BookResponse book in books)
+            //{
+            //    sb.AppendLine($"<b>책 장르</b> : {book.bookGenre}\n<b>추천이유</b> : {book.bookReason}\n<b>내용 요약</b> : {book.bookSummary}\n<b>링크</b> :{book.bookUrl}\n<b>링크</b> :{book.bookUrl}");
+            //}
+
+            //outputBox.GetComponent<TextMeshProUGUI>().text = sb.ToString();
+
+            //Debug.Log(books[0].imageUrl);
+
+            for (int i = 0; i < books.Length; i++)
             {
-                sb.AppendLine($"<b>{book.bookTitle}</b>\n{book.bookReason}\n");
+                var book = books[i];
+                StartCoroutine(LoadImageFromUrl(book.imageUrl, coverImages[i]));
+                coverImages[i].transform.GetChild(1).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; // 나중에 작가 이름 더하기 ////////////////
             }
-
-            outputBox.GetComponent<TextMeshProUGUI>().text = sb.ToString();
-
-            Debug.Log(books[0].imageUrl);
-
-            // 일단은 첫 번째 책 커버만 표시
-            StartCoroutine(LoadImageFromUrl(books[0].imageUrl));
         }));
     }
 
     #endregion
 
     // 이미지 URL 을 받아와 이미지로 로드
-    private IEnumerator LoadImageFromUrl(string url)
+    public IEnumerator LoadImageFromUrl(string url, UnityEngine.UI.Image coverImage)
     {
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
-        yield return request.SendWebRequest();
+        // 프로토콜을 https로 강제 변경
+        if (url.StartsWith("http://"))
+            url = "https://" + url.Substring(7);
 
-        if (request.result == UnityWebRequest.Result.Success)
+        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
         {
-            Texture2D texture = DownloadHandlerTexture.GetContent(request);
-            coverImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-        }
-        else
-        {
-            Debug.LogError("이미지 불러오기 실패: " + request.error);
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                coverImage.sprite = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+            }
+            else
+            {
+                Debug.LogError($"이미지 불러오기 실패: {request.error}");
+            }
         }
     }
 
