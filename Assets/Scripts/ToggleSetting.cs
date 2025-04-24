@@ -106,13 +106,6 @@ public class ToggleSetting : MonoBehaviour
     }
 
 
-
-    // 추천받은 책 3권 버튼에 연결
-    public void BringBookInfo(int bookIdx)
-    {
-        SetBookUI(bookIdx, coverImage);
-    }
-
     // UI에 표지와 책 정보 표시
     public void SetBookUI(int bookIdx, Image coverImage)
     {
@@ -121,30 +114,12 @@ public class ToggleSetting : MonoBehaviour
         coverImage.transform.GetChild(1).GetComponentInChildren<TMP_Text>().text = FormatLine("제목", book.bookTitle) + "\n" +
                                                                          FormatLine("키워드", book.bookGenre) + "\n" +
                                                                          FormatLine("내용 요약", book.bookSummary) + "\n" +
-                                                                         FormatLine("추천이유", book.bookReason) + "\n" +
                                                                          FormatLine("링크", book.bookUrl);
-    }
-
-    // 이미지 URL 을 받아와 이미지로 로드
-    public IEnumerator LoadImageFromUrl(string url, UnityEngine.UI.Image coverImage)
-    {
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            Texture2D texture = DownloadHandlerTexture.GetContent(request);
-            coverImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-        }
-        else
-        {
-            Debug.LogError("이미지 불러오기 실패: " + request.error);
-        }
     }
 
     // 문자열 간격 조정
     public string FormatLine(string category, string content)
     {
-        return $"{category.PadRight(8)} : {content}";
+        return $"<{category.PadRight(8)} : {content}>";
     }
 }

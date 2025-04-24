@@ -58,13 +58,16 @@ public struct ChatResponse
 public struct BookListResponse
 {
     public BookResponse[] recommendations;
+    public string[] keywords;
+    public string userType;
+    public string userTypeReason;
 }
 
 [System.Serializable]
 public struct BookResponse
 {
     public string bookTitle;
-    public string bookReason;
+    public string bookKeyword;
     public string imageUrl;
     public string bookUrl;
     public string bookSummary;
@@ -182,11 +185,11 @@ public class HttpManager : MonoBehaviour
         {
             ChatResponse response = (ChatResponse)result;
             outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
-            if(response.canRecommend)
+            if (response.canRecommend)
             {
-                btn_getRec.gameObject.SetActive(true);
+                btn_getRec.interactable = true;
             }
-            Debug.Log(response.canRecommend);
+            
         }));
     }
 
@@ -207,14 +210,13 @@ public class HttpManager : MonoBehaviour
             contentType= "application/json"
         };
 
-        Debug.Log(info.url);
-
         StartCoroutine(SendRequest(info, result =>
         {
-            btn_expand.gameObject.SetActive(true);
+            btn_expand.interactable = true;
             books = (BookResponse[])result;
 
             toggleSetting.SetBookUI(0, coverImage);
+            StartCoroutine(LoadImageFromUrl(books[0].imageUrl, coverImage));
 
             //StringBuilder sb = new StringBuilder();
             //foreach (BookResponse book in books)
@@ -229,15 +231,40 @@ public class HttpManager : MonoBehaviour
             for (int i = 0; i < books.Length; i++)
             {
                 var book = books[i];
-                StartCoroutine(toggleSetting.LoadImageFromUrl(book.imageUrl, coverImages[i]));
-                coverImages[i].transform.GetChild(0).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; // 나중에 작가 이름 더하기 ////////////////
+                StartCoroutine(LoadImageFromUrl(book.imageUrl, coverImages[i]));
+                coverImages[i].transform.GetChild(1).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; // 나중에 작가 이름 더하기 ////////////////
             }
         }));
     }
 
     #endregion
 
-    
+    // 이미지 URL 을 받아와 이미지로 로드
+    public IEnumerator LoadImageFromUrl(string url, UnityEngine.UI.Image coverImage)
+    {
+        // 프로토콜을 https로 강제 변경
+        if (url.StartsWith("http://"))
+            url = "https://" + url.Substring(7);
+
+        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
+        {
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                coverImage.sprite = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+            }
+            else
+            {
+                Debug.LogError($"이미지 불러오기 실패: {request.error}");
+            }
+        }
+    }
 
     #region 통신 관련 함수
     // 요청에 따라 응답 타입 다름 -> DoneRequest 대신 Callback(onSuccess) 사용 
