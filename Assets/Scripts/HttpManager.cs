@@ -160,11 +160,15 @@ public class HttpManager : MonoBehaviour
     // 챗을 보내고 답변을 받음
     public void OnClickSendChat()
     {
-        string userMessage = inputBox.GetComponent<TMP_InputField>().text;
+        //string userMessage = inputBox.GetComponent<TMP_InputField>().text;
+        string userMessage = UIManager.Instance.inputChat.GetComponent<TMP_InputField>().text;
 
         // 빈 메시지는 무시
         if (string.IsNullOrWhiteSpace(userMessage))
             return;
+        GameObject userChat = GameObject.Instantiate(UIManager.Instance.userChat, UIManager.Instance.content.transform);
+        userChat.GetComponent<TextMeshProUGUI>().text += userMessage;
+
 
         ChatData chatData = new ChatData
         {
@@ -189,8 +193,8 @@ public class HttpManager : MonoBehaviour
             {
                 btn_getRec.interactable = true;
             }
-            inputBox.GetComponent<TMP_InputField>().text = "";
 
+            inputBox.GetComponent<TMP_InputField>().text = "";
 
         }));
     }
