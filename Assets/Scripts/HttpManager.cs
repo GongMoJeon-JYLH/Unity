@@ -189,7 +189,9 @@ public class HttpManager : MonoBehaviour
             {
                 btn_getRec.interactable = true;
             }
-            
+            inputBox.GetComponent<TMP_InputField>().text = "";
+
+
         }));
     }
 
