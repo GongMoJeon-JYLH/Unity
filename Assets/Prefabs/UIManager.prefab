@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8033904707985421358}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1151.2816, y: 443.37466, z: 4.377055}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -45,7 +45,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   srollChatWindow: {fileID: 0}
-  aiChat: {fileID: 0}
+  aiChat: {fileID: 3221974160904795619, guid: a34ff3cef6323254a919126e557d1744, type: 3}
   userChat: {fileID: 4430447146463915345, guid: 8db089971ec78ac4fae04b53687e5465, type: 3}
   inputChat: {fileID: 0}
   content: {fileID: 0}
+  keywordPanel: {fileID: 0}
+  text_keyword: {fileID: 36443468450540009, guid: 621af904fa3c6a94e83e63990634e3cf, type: 3}
+  loadingBar: {fileID: 0}
+  btn_sendChat: {fileID: 0}
+  btn_Recommand: {fileID: 0}

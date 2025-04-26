@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     public GameObject keywordPanel;
     public GameObject text_keyword;
 
+    public GameObject loadingBar;
+
     public Button btn_sendChat;
     public Button btn_Recommand;
 
@@ -47,6 +49,8 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
+
+        loadingBar.SetActive(false);
         //btn_sendChat.onClick.AddListener(HttpManager.Instance.OnClickSendChat);
         //btn_Recommand.onClick.AddListener(HttpManager.Instance.OnClickGetBookRecommendation);
     }

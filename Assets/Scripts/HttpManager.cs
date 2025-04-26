@@ -166,6 +166,8 @@ public class HttpManager : MonoBehaviour
         // 빈 메시지는 무시
         if (string.IsNullOrWhiteSpace(userMessage))
             return;
+
+        UIManager.Instance.loadingBar.SetActive(true);
         GameObject userChat = GameObject.Instantiate(UIManager.Instance.userChat, UIManager.Instance.content.transform);
         userChat.GetComponent<TextMeshProUGUI>().text += userMessage;
 
@@ -192,6 +194,9 @@ public class HttpManager : MonoBehaviour
 
             GameObject aiChat = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
             userChat.GetComponent<TextMeshProUGUI>().text += response.responseText;
+
+            UIManager.Instance.loadingBar.SetActive(false);
+
 
             if (response.canRecommend)
             {
