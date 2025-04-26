@@ -109,7 +109,7 @@ public class HttpManager : MonoBehaviour
     public GameObject outputBox;
     public UnityEngine.UI.Button btn_expand;
     public UnityEngine.UI.Button btn_getRec;
-    public ToggleSetting toggleSetting;
+    public Rec2Setting toggleSetting;
 
     public UnityEngine.UI.Image[] coverImages;
 
