@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Michsky.MUIP;
+using System;
 using System.Collections;
 using System.Net.Http;
 using System.Text;
@@ -106,13 +107,31 @@ public class HttpManager : MonoBehaviour
     }
 
     public GameObject nameBox;
-    public UnityEngine.UI.Button btn_expand;
-    public UnityEngine.UI.Button btn_getRec;
+    public GameObject btn_expand;
+    public GameObject btn_getRec;
     public Rec2Setting toggleSetting;
 
     public UnityEngine.UI.Image[] coverImages;
 
     public string server = ""; // 에디터에서 조정  
+
+    private void Start()
+    {
+        btn_expand.GetComponent<ButtonManager>().isInteractable = false;
+        btn_getRec.GetComponent<ButtonManager>().isInteractable = false;
+
+    }
+
+    //private void Update()
+    //{
+    //    if(btn_getRec)
+    //    {
+    //        if(btn_getRec.GetComponent<ButtonManager>().isInteractable == false)
+    //        {
+    //            btn_getRec.GetComponent<ButtonManager>().
+    //        }
+    //    }
+    //}
 
     // UserInfo
     FullLoginData thisUserInfo = new FullLoginData
@@ -170,7 +189,7 @@ public class HttpManager : MonoBehaviour
 
         UIManager.Instance.loadingBar.SetActive(true);
         UIManager.Instance.tmp_Chat.text += "\n <color=blue>나</color>:" + userMessage;
-        
+        UIManager.Instance.btn_clickChat.GetComponent<ButtonManager>().isInteractable = false;
         //GameObject userChatObject = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
         //userChatObject.GetComponent<TextMeshProUGUI>().text = "나: " + userMessage;
 
@@ -203,10 +222,13 @@ public class HttpManager : MonoBehaviour
 
             if (response.canRecommend)
             {
-                btn_getRec.interactable = true;
+                btn_getRec.GetComponent<ButtonManager>().isInteractable = true;
+
             }
 
             UIManager.Instance.inputChat.GetComponent<TMP_InputField>().text = "";
+            UIManager.Instance.btn_clickChat.GetComponent<ButtonManager>().isInteractable = true;
+
 
         }));
     }
@@ -223,15 +245,14 @@ public class HttpManager : MonoBehaviour
     // 로그인 데이터를 보내고 책 추천을 받아옴
     public void OnClickGetBookRecommendation()
     {
-        GameObject go = Instantiate(UIManager.Instance.text_keyword, UIManager.Instance.keywordPanel.transform);
+        //GameObject go = Instantiate(UIManager.Instance.text_keyword, UIManager.Instance.keywordPanel.transform);
 
         // Ű���� �ؽ�Ʈ ������ 
         //go.GetComponent<TextMeshProUGUI>().text = "��Ÿ��???";
 
         // Ű���� ��ġ ����
-        go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
-        go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
-
+        //go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
+        //go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
 
 
         HttpInfo info = new HttpInfo
@@ -245,8 +266,10 @@ public class HttpManager : MonoBehaviour
 
         StartCoroutine(SendRequest(info, result =>
         {
-            btn_expand.interactable = true;
-            books = (BookResponse[])result;
+            print("뭘로?");
+            btn_expand.GetComponent<ButtonManager>().isInteractable = true;
+            list = (BookListResponse)result;
+            books = list.recommendations;
 
 
             var firstBook = books[0];
@@ -258,8 +281,6 @@ public class HttpManager : MonoBehaviour
 
             //toggleSetting.SetBookUI(0, coverImage);
             toggleSetting.SetTextBoxes(texts);
-
-            list = (BookListResponse)result;
 
 
 
@@ -364,7 +385,7 @@ public class HttpManager : MonoBehaviour
                     break;
                 case ResponseType.Book:
                     BookListResponse bookList = JsonUtility.FromJson<BookListResponse>(request.downloadHandler.text);
-                    onSuccess?.Invoke(bookList.recommendations);
+                    onSuccess?.Invoke(bookList);
                     break;
                 default:
                     Debug.Log("응답 타입 없음");

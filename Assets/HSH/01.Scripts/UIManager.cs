@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour
 
     public GameObject loadingBar;
 
+    public GameObject btn_clickChat;
 
     void Awake()
     {
