@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Net.Http;
 using System.Text;
@@ -112,7 +112,7 @@ public class HttpManager : MonoBehaviour
 
     public UnityEngine.UI.Image[] coverImages;
 
-    public string server = ""; // �����Ϳ��� ���� 
+    public string server = ""; // 에디터에서 조정  
 
     // UserInfo
     FullLoginData thisUserInfo = new FullLoginData
@@ -121,9 +121,9 @@ public class HttpManager : MonoBehaviour
         userId = ""
     };
 
-    #region ��ư�� �ٴ� �Լ���
+    #region 버튼에 붙는 함수들
 
-    // �Է��� �г��� ������ �����κ��� ������ȣ ����
+    // 입력한 닉네임 보내고 서버로부터 고유번호 받음
     public void OnClickSendUserIdAndGetUserNum()
     {
         LoginData loginData = new LoginData
@@ -142,11 +142,11 @@ public class HttpManager : MonoBehaviour
 
         StartCoroutine(SendRequest(info, result =>
         {
-            //Debug.Log("���� ���� �� ��������");
+            Debug.Log("유저 정보 잘 보내졌다");
 
             if (result == null)
             {
-                //Debug.LogError("������ null�Դϴ�.");
+                Debug.LogError("응답이 null입니다.");
                 return;
             }
 
@@ -156,13 +156,13 @@ public class HttpManager : MonoBehaviour
         }));
     }
 
-    // ê�� ������ �亯�� ����
+    // 챗을 보내고 답변을 받음
     public void OnClickSendChat()
     {
         //string userMessage = inputBox.GetComponent<TMP_InputField>().text;
         string userMessage = UIManager.Instance.inputChat.GetComponent<TMP_InputField>().text;
 
-        // �� �޽����� ����
+        // 빈 메시지는 무시
         if (string.IsNullOrWhiteSpace(userMessage))
             return;
 
@@ -207,7 +207,7 @@ public class HttpManager : MonoBehaviour
         }));
     }
 
-    // �޾ƿ� å ��õ �ϴ� �迭�� ����, �� �� ������Ʈ�� ������ UI ��ҵ鵵 �޾ƿ�
+    // 받아온 책 추천 일단 배열로 저장, 그 외 업데이트할 나머지 UI 요소들도 받아옴
     public BookResponse[] books = new BookResponse[3];
     public UnityEngine.UI.Image coverImage;
 
@@ -216,7 +216,7 @@ public class HttpManager : MonoBehaviour
 
     public BookListResponse list;
 
-    // �α��� �����͸� ������ å ��õ�� �޾ƿ�
+    // 로그인 데이터를 보내고 책 추천을 받아옴
     public void OnClickGetBookRecommendation()
     {
         GameObject go = Instantiate(UIManager.Instance.text_keyword, UIManager.Instance.keywordPanel.transform);
@@ -290,17 +290,17 @@ public class HttpManager : MonoBehaviour
             {
                 var book = books[i];
                 StartCoroutine(LoadImageFromUrl(book.imageUrl, coverImages[i]));
-                coverImages[i].transform.GetChild(1).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; // ���߿� �۰� �̸� ���ϱ� ////////////////
+                coverImages[i].transform.GetChild(1).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; // 나중에 작가 이름 더하기 ////////////////
             }
         }));
     }
 
     #endregion
 
-    // �̹��� URL �� �޾ƿ� �̹����� �ε�
+    // 이미지 URL 을 받아와 이미지로 로드
     public IEnumerator LoadImageFromUrl(string url, UnityEngine.UI.Image coverImage)
     {
-        // ���������� https�� ���� ����
+        // 프로토콜을 https로 강제 변경
         if (url.StartsWith("http://"))
             url = "https://" + url.Substring(7);
 
@@ -319,13 +319,13 @@ public class HttpManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"�̹��� �ҷ����� ����: {request.error}");
+                Debug.LogError($"이미지 불러오기 실패: {request.error}");
             }
         }
     }
 
-    #region ��� ���� �Լ�
-    // ��û�� ���� ���� Ÿ�� �ٸ� -> DoneRequest ��� Callback(onSuccess) ��� 
+    #region 통신 관련 함수
+    // 요청에 따라 응답 타입 다름 -> DoneRequest 대신 Callback(onSuccess) 사용  ��� 
     public IEnumerator SendRequest(HttpInfo info, System.Action<object> onSuccess)
     {
         UnityWebRequest request;
@@ -363,13 +363,13 @@ public class HttpManager : MonoBehaviour
                     onSuccess?.Invoke(bookList.recommendations);
                     break;
                 default:
-                    Debug.Log("���� Ÿ�� ����");
+                    Debug.Log("응답 타입 없음");
                     break;
             }
         }
         else
         {
-            Debug.LogError("��û ����: " + request.error);
+            Debug.LogError("요청 실패: " + request.error);
         }
     }
 
