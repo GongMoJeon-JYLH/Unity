@@ -13,14 +13,13 @@ public class UIManager : MonoBehaviour
     public GameObject userChat;
     public TMP_InputField inputChat;
     public GameObject content;
+    public GameObject panel_chat;
+    public GameObject panel_name;
 
     public GameObject keywordPanel;
     public GameObject text_keyword;
 
     public GameObject loadingBar;
-
-    public Button btn_sendChat;
-    public Button btn_Recommand;
 
 
     void Awake()

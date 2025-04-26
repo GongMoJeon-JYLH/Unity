@@ -106,8 +106,6 @@ public class HttpManager : MonoBehaviour
     }
 
     public GameObject nameBox;
-    public GameObject inputBox;
-    public GameObject outputBox;
     public UnityEngine.UI.Button btn_expand;
     public UnityEngine.UI.Button btn_getRec;
     public Rec2Setting toggleSetting;
@@ -144,11 +142,11 @@ public class HttpManager : MonoBehaviour
 
         StartCoroutine(SendRequest(info, result =>
         {
-            Debug.Log("���� ���� �� ��������");
+            //Debug.Log("���� ���� �� ��������");
 
             if (result == null)
             {
-                Debug.LogError("������ null�Դϴ�.");
+                //Debug.LogError("������ null�Դϴ�.");
                 return;
             }
 
@@ -191,7 +189,7 @@ public class HttpManager : MonoBehaviour
         StartCoroutine(SendRequest(info, result =>
         {
             ChatResponse response = (ChatResponse)result;
-            outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
+            //outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
 
             GameObject aiChat = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
             userChat.GetComponent<TextMeshProUGUI>().text += response.responseText;
@@ -204,7 +202,7 @@ public class HttpManager : MonoBehaviour
                 btn_getRec.interactable = true;
             }
 
-            inputBox.GetComponent<TMP_InputField>().text = "";
+            UIManager.Instance.inputChat.GetComponent<TMP_InputField>().text = "";
 
         }));
     }
@@ -224,7 +222,7 @@ public class HttpManager : MonoBehaviour
         GameObject go = Instantiate(UIManager.Instance.text_keyword, UIManager.Instance.keywordPanel.transform);
 
         // Ű���� �ؽ�Ʈ ������ 
-        go.GetComponent<TextMeshProUGUI>().text = "��Ÿ��???";
+        //go.GetComponent<TextMeshProUGUI>().text = "��Ÿ��???";
 
         // Ű���� ��ġ ����
         go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
@@ -250,7 +248,7 @@ public class HttpManager : MonoBehaviour
             var firstBook = books[0];
             string[] texts = new string[]
             {
-                $"����<indent={INDENT}>: </indent>", firstBook.bookTitle, $"Ű����<indent={INDENT}>: </indent>", firstBook.bookGenre, $"���� ���<indent={INDENT}>: </indent>", firstBook.bookSummary, $"��ũ<indent={INDENT}>: </indent>", firstBook.bookUrl
+                $"제목<indent={INDENT}>: </indent>", firstBook.bookTitle, $"키워드<indent={INDENT}>: </indent>", firstBook.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", firstBook.bookSummary, $"링크<indent={INDENT}>: </indent>", firstBook.bookUrl
                 //$"���� : ", firstBook.bookTitle, $"Ű���� : ", firstBook.bookGenre, $"���� ��� : ", firstBook.bookSummary, $"��ũ :", firstBook.bookUrl
             };
 
@@ -274,7 +272,7 @@ public class HttpManager : MonoBehaviour
 
             }
 
-            toggleSetting.SetBookUI(0, coverImage);
+            ////////////toggleSetting.SetBookUI(0, coverImage);
 
             StartCoroutine(LoadImageFromUrl(books[0].imageUrl, coverImage));
 
