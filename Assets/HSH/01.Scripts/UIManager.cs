@@ -54,7 +54,7 @@ public class UIManager : MonoBehaviour
     {
 
         loadingBar.SetActive(false);
-        tmp_Chat.text = "<color=#00FFFF>추천봇</color>: 혹시 최근에 인상 깊게 읽었던 책이나 관심 있는 주제가 있으신가요?";
+        //tmp_Chat.text = "<color=#00FFFF>추천봇</color>: 혹시 최근에 인상 깊게 읽었던 책이나 관심 있는 주제가 있으신가요?";
 
         PanelChange(true);
         //btn_sendChat.onClick.AddListener(HttpManager.Instance.OnClickSendChat);
