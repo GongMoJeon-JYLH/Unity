@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Xml;
 using TMPro;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.VolumeComponent;
@@ -32,6 +31,7 @@ public class ScrollViewTest : MonoBehaviour
 
         string[] texts = new string[]
         {
+            //$"제목 : ", book.bookTitle, $"키워드 : ", book.bookGenre, $"내용 요약 : ", book.bookSummary, $"링크 :", book.bookUrl
             $"제목<indent={INDENT}>: </indent>", book.bookTitle, $"키워드<indent={INDENT}>: </indent>", book.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", book.bookSummary, $"링크<indent={INDENT}>: </indent>", book.bookUrl
         };
 
@@ -54,13 +54,15 @@ public class ScrollViewTest : MonoBehaviour
             rowRect.anchorMin = new Vector2(0f, 1f); // 상단 정렬
             rowRect.anchorMax = new Vector2(1f, 1f);  // 상단 정렬
             rowRect.pivot = new Vector2(0f, 1f);    // 기준점 좌측 상단
+            rowRect.offsetMin = new Vector2(0f, rowRect.offsetMin.y); // 왼쪽 offset 0
+            rowRect.offsetMax = new Vector2(0f, rowRect.offsetMax.y); // 오른쪽 offset 0
 
             // Content의 VerticalLayoutGroup 설정
             VerticalLayoutGroup vlg = content.GetComponent<VerticalLayoutGroup>();
-            vlg.childControlWidth = true;
-            vlg.childControlHeight = true;
-            vlg.childForceExpandWidth = true;
-            vlg.childForceExpandHeight = true;
+            //vlg.childControlWidth = true;
+            //vlg.childControlHeight = true;
+            //vlg.childForceExpandWidth = true;
+            //vlg.childForceExpandHeight = true;
 
             TextMeshProUGUI txt1 = row.transform.GetChild(0).GetComponentInChildren<TextMeshProUGUI>();
             TextMeshProUGUI txt2 = row.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
@@ -69,6 +71,7 @@ public class ScrollViewTest : MonoBehaviour
             txt2.text = texts[i + 1];
 
             // height 설정
+            StartCoroutine(UpdateWidth(txt1));
             StartCoroutine(UpdateHeight(row, txt1, txt2));
         }
     }
@@ -84,6 +87,27 @@ public class ScrollViewTest : MonoBehaviour
         }
 
         loe.preferredHeight = Mathf.Max(txt1.preferredHeight, txt2.preferredHeight);
+    }
+
+    IEnumerator UpdateWidth(TextMeshProUGUI txt1)
+    {
+        yield return null;
+
+        LayoutElement loe1 = txt1.gameObject.GetComponent<LayoutElement>();
+        if (loe1 == null)
+        {
+            loe1 = txt1.gameObject.AddComponent<LayoutElement>();
+        }
+
+        //LayoutElement loe2 = txt2.gameObject.GetComponent<LayoutElement>();
+        //if (loe1 == null)
+        //{
+        //    loe2 = txt2.gameObject.AddComponent<LayoutElement>();
+        //}
+
+        loe1.preferredWidth = txt1.preferredWidth;
+        //loe2.preferredWidth = txt2.preferredWidth;
+
     }
 
 }

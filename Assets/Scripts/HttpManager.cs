@@ -226,6 +226,7 @@ public class HttpManager : MonoBehaviour
             string[] texts = new string[]
             {
                 $"제목<indent={INDENT}>: </indent>", firstBook.bookTitle, $"키워드<indent={INDENT}>: </indent>", firstBook.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", firstBook.bookSummary, $"링크<indent={INDENT}>: </indent>", firstBook.bookUrl
+                //$"제목 : ", firstBook.bookTitle, $"키워드 : ", firstBook.bookGenre, $"내용 요약 : ", firstBook.bookSummary, $"링크 :", firstBook.bookUrl
             };
 
             //toggleSetting.SetBookUI(0, coverImage);
