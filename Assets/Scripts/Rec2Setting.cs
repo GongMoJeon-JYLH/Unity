@@ -1,3 +1,4 @@
+ï»¿using Michsky.MUIP;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -5,11 +6,12 @@ using UnityEngine.InputSystem.Composites;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI.Table;
+using static UnityEngine.Rendering.VolumeComponent;
 
 public class Rec2Setting : MonoBehaviour
 {
     public Image panel;
-    public Button btn_expand;
+    public GameObject btn_expand;
     public Image coverImage;
 
     float width;
@@ -30,7 +32,7 @@ public class Rec2Setting : MonoBehaviour
         originalSize = panel.rectTransform.sizeDelta;
     }
 
-    // Åä±Û Expand
+    // í† ê¸€ Expand
     public void Expand()
     {
         if (!expanded)
@@ -38,7 +40,7 @@ public class Rec2Setting : MonoBehaviour
             //panel.rectTransform.anchoredPosition = newPos;
             //panel.rectTransform.sizeDelta = newSize;
             StartCoroutine(AnimateSize(panel.rectTransform.sizeDelta, newSize, 0.5f));
-            btn_expand.GetComponentInChildren<TextMeshProUGUI>().text = "close"; 
+            btn_expand.GetComponent<ButtonManager>().buttonText = "ë‹«ê¸°"; 
 
             foreach(var ci in coverImages)
             {
@@ -52,7 +54,7 @@ public class Rec2Setting : MonoBehaviour
             //panel.rectTransform.anchoredPosition = originalPos;
             //panel.rectTransform.sizeDelta = originalSize;
             StartCoroutine(AnimateSize(panel.rectTransform.sizeDelta, originalSize, 0.5f));
-            btn_expand.GetComponentInChildren<TextMeshProUGUI>().text = "expand";
+            btn_expand.GetComponent<ButtonManager>().buttonText = "í¼ì¹˜ê¸°";
 
             foreach (var ci in coverImages)
             {
@@ -63,7 +65,7 @@ public class Rec2Setting : MonoBehaviour
         }
     }
 
-    // Expand ¿¬ÃâÇÏ´Â easing function
+    // Expand ì—°ì¶œí•˜ëŠ” easing function
     IEnumerator AnimateSize(Vector2 from, Vector2 to, float duration)
     {
         float elapsed = 0f;
@@ -107,7 +109,7 @@ public class Rec2Setting : MonoBehaviour
     }
 
 
-    //// UI¿¡ Ç¥Áö¿Í Ã¥ Á¤º¸ Ç¥½Ã
+    //// UIì— í‘œì§€ì™€ ì±… ì •ë³´ í‘œì‹œ
     public RectTransform content;
     public GameObject rowPrefab;
     int columns = 2;
@@ -119,15 +121,15 @@ public class Rec2Setting : MonoBehaviour
             GameObject row = Instantiate(rowPrefab);
             row.transform.SetParent(content, false);
 
-            // RowÀÇ RectTransform ¼³Á¤
+            // Rowì˜ RectTransform ì„¤ì •
             RectTransform rowRect = row.GetComponent<RectTransform>();
-            rowRect.anchorMin = new Vector2(0f, 1f); // »ó´Ü Á¤·Ä
-            rowRect.anchorMax = new Vector2(1f, 1f);  // »ó´Ü Á¤·Ä
-            rowRect.pivot = new Vector2(0f, 1f);    // ±âÁØÁ¡ ÁÂÃø »ó´Ü
-            rowRect.offsetMin = new Vector2(0f, rowRect.offsetMin.y); // ¿ŞÂÊ offset 0
-            rowRect.offsetMax = new Vector2(0f, rowRect.offsetMax.y); // ¿À¸¥ÂÊ offset 0
+            rowRect.anchorMin = new Vector2(0f, 1f); // ìƒë‹¨ ì •ë ¬
+            rowRect.anchorMax = new Vector2(1f, 1f);  // ìƒë‹¨ ì •ë ¬
+            rowRect.pivot = new Vector2(0f, 1f);    // ê¸°ì¤€ì  ì¢Œì¸¡ ìƒë‹¨
+            rowRect.offsetMin = new Vector2(0f, rowRect.offsetMin.y); // ì™¼ìª½ offset 0
+            rowRect.offsetMax = new Vector2(0f, rowRect.offsetMax.y); // ì˜¤ë¥¸ìª½ offset 0
 
-            // ContentÀÇ VerticalLayoutGroup ¼³Á¤
+            // Contentì˜ VerticalLayoutGroup ì„¤ì •
             VerticalLayoutGroup vlg = content.GetComponent<VerticalLayoutGroup>();
 
             TextMeshProUGUI txt1 = row.transform.GetChild(0).GetComponentInChildren<TextMeshProUGUI>();
@@ -136,7 +138,7 @@ public class Rec2Setting : MonoBehaviour
             txt1.text = texts[i];
             txt2.text = texts[i + 1];
 
-            // height ¼³Á¤
+            // height ì„¤ì •
             StartCoroutine(UpdateWidth(txt1));
             StartCoroutine(UpdateHeight(row, txt1, txt2));
         }
@@ -144,7 +146,7 @@ public class Rec2Setting : MonoBehaviour
 
     IEnumerator UpdateHeight(GameObject row, TextMeshProUGUI txt1, TextMeshProUGUI txt2)
     {
-        yield return null; // 1 ÇÁ·¹ÀÓ ±â´Ù¸®±â
+        yield return null; // 1 í”„ë ˆì„ ê¸°ë‹¤ë¦¬ê¸°
 
         LayoutElement loe = row.GetComponent<LayoutElement>();
         if (loe == null)
@@ -176,19 +178,32 @@ public class Rec2Setting : MonoBehaviour
 
     }
 
+    public void SetMainDetailText(int idx)
+    {
+        var book = HttpManager.Instance.books[idx];
+        int INDENT = 150;
 
+        string[] texts = new string[]
+        {
+            $"ì œëª©<indent={INDENT}>: </indent>", book.bookTitle, $"í‚¤ì›Œë“œ<indent={INDENT}>: </indent>", book.bookGenre, $"ë‚´ìš© ìš”ì•½<indent={INDENT}>: </indent>", book.bookSummary, $"ë§í¬<indent={INDENT}>: </indent>", book.bookUrl
+        };
+
+        SetTextBoxes(texts);
+
+        //coverImage.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = HttpManager.Instance.
+    }
 
     //public void SetBookUI(int bookIdx, Image coverImage)
     //{
     //    var book = HttpManager.Instance.books[bookIdx];
     //    coverImage.transform.GetChild(0).GetComponent<TMP_Text>().text = book.bookTitle;
-    //    coverImage.transform.GetChild(1).GetComponentInChildren<TMP_Text>().text = FormatLine("Á¦¸ñ", book.bookTitle) + "\n" +
-    //                                                                     FormatLine("Å°¿öµå", book.bookGenre) + "\n" +
-    //                                                                     FormatLine("³»¿ë ¿ä¾à", book.bookSummary) + "\n" +
-    //                                                                     FormatLine("¸µÅ©", book.bookUrl);
+    //    coverImage.transform.GetChild(1).GetComponentInChildren<TMP_Text>().text = FormatLine("ì œëª©", book.bookTitle) + "\n" +
+    //                                                                     FormatLine("í‚¤ì›Œë“œ", book.bookGenre) + "\n" +
+    //                                                                     FormatLine("ë‚´ìš© ìš”ì•½", book.bookSummary) + "\n" +
+    //                                                                     FormatLine("ë§í¬", book.bookUrl);
     //}
 
-    //// ¹®ÀÚ¿­ °£°İ Á¶Á¤
+    //// ë¬¸ìì—´ ê°„ê²© ì¡°ì •
     //public string FormatLine(string category, string content)
     //{
     //    int mspace = 24;
