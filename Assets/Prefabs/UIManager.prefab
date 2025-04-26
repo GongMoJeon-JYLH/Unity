@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8033904707985421358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 266427034751225096}
+  - component: {fileID: 7081465490549722490}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &266427034751225096
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8033904707985421358}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1151.2816, y: 443.37466, z: 4.377055}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7081465490549722490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8033904707985421358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5abf42f5a38dcd74bac2bb6ad6e35e74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  srollChatWindow: {fileID: 0}
+  aiChat: {fileID: 3221974160904795619, guid: a34ff3cef6323254a919126e557d1744, type: 3}
+  userChat: {fileID: 4430447146463915345, guid: 8db089971ec78ac4fae04b53687e5465, type: 3}
+  inputChat: {fileID: 0}
+  content: {fileID: 0}
+  keywordPanel: {fileID: 0}
+  text_keyword: {fileID: 36443468450540009, guid: 621af904fa3c6a94e83e63990634e3cf, type: 3}
+  loadingBar: {fileID: 0}
+  btn_sendChat: {fileID: 0}
+  btn_Recommand: {fileID: 0}

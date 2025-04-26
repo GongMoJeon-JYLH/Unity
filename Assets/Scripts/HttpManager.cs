@@ -26,7 +26,7 @@ public struct HttpInfo
     public ResponseType responseType;
 }
 
-// ¿äÃ» µ¥ÀÌÅÍ ±¸Á¶µé
+// ï¿½ï¿½Ã» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 [System.Serializable] 
 public struct LoginData
 {
@@ -40,7 +40,7 @@ public struct ChatData
     public string userId;
 }
 
-// ÀÀ´ä µ¥ÀÌÅÍ ±¸Á¶µé
+// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 [System.Serializable]
 public struct FullLoginData
 {
@@ -114,7 +114,7 @@ public class HttpManager : MonoBehaviour
 
     public UnityEngine.UI.Image[] coverImages;
 
-    public string server = ""; // ¿¡µðÅÍ¿¡¼­ Á¶Á¤ 
+    public string server = ""; // ï¿½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 
     // UserInfo
     FullLoginData thisUserInfo = new FullLoginData
@@ -123,9 +123,9 @@ public class HttpManager : MonoBehaviour
         userId = ""
     };
 
-    #region ¹öÆ°¿¡ ºÙ´Â ÇÔ¼öµé
+    #region ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½Ù´ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½
 
-    // ÀÔ·ÂÇÑ ´Ð³×ÀÓ º¸³»°í ¼­¹ö·ÎºÎÅÍ °íÀ¯¹øÈ£ ¹ÞÀ½
+    // ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½
     public void OnClickSendUserIdAndGetUserNum()
     {
         LoginData loginData = new LoginData
@@ -144,11 +144,11 @@ public class HttpManager : MonoBehaviour
 
         StartCoroutine(SendRequest(info, result =>
         {
-            Debug.Log("À¯Àú Á¤º¸ Àß º¸³»Á³´Ù");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 
             if (result == null)
             {
-                Debug.LogError("ÀÀ´äÀÌ nullÀÔ´Ï´Ù.");
+                Debug.LogError("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ nullï¿½Ô´Ï´ï¿½.");
                 return;
             }
 
@@ -158,15 +158,17 @@ public class HttpManager : MonoBehaviour
         }));
     }
 
-    // ÃªÀ» º¸³»°í ´äº¯À» ¹ÞÀ½
+    // Ãªï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½äº¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public void OnClickSendChat()
     {
         //string userMessage = inputBox.GetComponent<TMP_InputField>().text;
         string userMessage = UIManager.Instance.inputChat.GetComponent<TMP_InputField>().text;
 
-        // ºó ¸Þ½ÃÁö´Â ¹«½Ã
+        // ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (string.IsNullOrWhiteSpace(userMessage))
             return;
+
+        UIManager.Instance.loadingBar.SetActive(true);
         GameObject userChat = GameObject.Instantiate(UIManager.Instance.userChat, UIManager.Instance.content.transform);
         userChat.GetComponent<TextMeshProUGUI>().text += userMessage;
 
@@ -190,6 +192,13 @@ public class HttpManager : MonoBehaviour
         {
             ChatResponse response = (ChatResponse)result;
             outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
+
+            GameObject aiChat = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
+            userChat.GetComponent<TextMeshProUGUI>().text += response.responseText;
+
+            UIManager.Instance.loadingBar.SetActive(false);
+
+
             if (response.canRecommend)
             {
                 btn_getRec.interactable = true;
@@ -200,14 +209,29 @@ public class HttpManager : MonoBehaviour
         }));
     }
 
-    // ¹Þ¾Æ¿Â Ã¥ ÃßÃµ ÀÏ´Ü ¹è¿­·Î ÀúÀå, ±× ¿Ü ¾÷µ¥ÀÌÆ®ÇÒ ³ª¸ÓÁö UI ¿ä¼Òµéµµ ¹Þ¾Æ¿È
+    // ï¿½Þ¾Æ¿ï¿½ Ã¥ ï¿½ï¿½Ãµ ï¿½Ï´ï¿½ ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI ï¿½ï¿½Òµéµµ ï¿½Þ¾Æ¿ï¿½
     public BookResponse[] books = new BookResponse[3];
     public UnityEngine.UI.Image coverImage;
+
     const int INDENT = 150;
 
-    // ·Î±×ÀÎ µ¥ÀÌÅÍ¸¦ º¸³»°í Ã¥ ÃßÃµÀ» ¹Þ¾Æ¿È
+
+    public BookListResponse list;
+
+    // ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¥ ï¿½ï¿½Ãµï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½
     public void OnClickGetBookRecommendation()
     {
+        GameObject go = Instantiate(UIManager.Instance.text_keyword, UIManager.Instance.keywordPanel.transform);
+
+        // Å°ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+        go.GetComponent<TextMeshProUGUI>().text = "ï¿½ï¿½Å¸ï¿½ï¿½???";
+
+        // Å°ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
+        go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
+        go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
+
+
+
         HttpInfo info = new HttpInfo
         {
             url = server + "/book-recommend",
@@ -222,21 +246,42 @@ public class HttpManager : MonoBehaviour
             btn_expand.interactable = true;
             books = (BookResponse[])result;
 
+
             var firstBook = books[0];
             string[] texts = new string[]
             {
-                $"Á¦¸ñ<indent={INDENT}>: </indent>", firstBook.bookTitle, $"Å°¿öµå<indent={INDENT}>: </indent>", firstBook.bookGenre, $"³»¿ë ¿ä¾à<indent={INDENT}>: </indent>", firstBook.bookSummary, $"¸µÅ©<indent={INDENT}>: </indent>", firstBook.bookUrl
-                //$"Á¦¸ñ : ", firstBook.bookTitle, $"Å°¿öµå : ", firstBook.bookGenre, $"³»¿ë ¿ä¾à : ", firstBook.bookSummary, $"¸µÅ© :", firstBook.bookUrl
+                $"ï¿½ï¿½ï¿½ï¿½<indent={INDENT}>: </indent>", firstBook.bookTitle, $"Å°ï¿½ï¿½ï¿½ï¿½<indent={INDENT}>: </indent>", firstBook.bookGenre, $"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½<indent={INDENT}>: </indent>", firstBook.bookSummary, $"ï¿½ï¿½Å©<indent={INDENT}>: </indent>", firstBook.bookUrl
+                //$"ï¿½ï¿½ï¿½ï¿½ : ", firstBook.bookTitle, $"Å°ï¿½ï¿½ï¿½ï¿½ : ", firstBook.bookGenre, $"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ : ", firstBook.bookSummary, $"ï¿½ï¿½Å© :", firstBook.bookUrl
             };
 
             //toggleSetting.SetBookUI(0, coverImage);
             toggleSetting.SetTextBoxes(texts);
+
+            list = (BookListResponse)result;
+
+
+
+            for (int i = 0; i < list.keywords.Length; i++)
+            {
+                GameObject go = Instantiate(UIManager.Instance.text_keyword, UIManager.Instance.keywordPanel.transform);
+
+                // Å°ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+                go.GetComponent<TextMeshProUGUI>().text = list.keywords[i];
+
+                // Å°ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
+                go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
+                go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
+
+            }
+
+            toggleSetting.SetBookUI(0, coverImage);
+
             StartCoroutine(LoadImageFromUrl(books[0].imageUrl, coverImage));
 
             //StringBuilder sb = new StringBuilder();
             //foreach (BookResponse book in books)
             //{
-            //    sb.AppendLine($"<b>Ã¥ Àå¸£</b> : {book.bookGenre}\n<b>ÃßÃµÀÌÀ¯</b> : {book.bookReason}\n<b>³»¿ë ¿ä¾à</b> : {book.bookSummary}\n<b>¸µÅ©</b> :{book.bookUrl}\n<b>¸µÅ©</b> :{book.bookUrl}");
+            //    sb.AppendLine($"<b>Ã¥ ï¿½å¸£</b> : {book.bookGenre}\n<b>ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½</b> : {book.bookReason}\n<b>ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½</b> : {book.bookSummary}\n<b>ï¿½ï¿½Å©</b> :{book.bookUrl}\n<b>ï¿½ï¿½Å©</b> :{book.bookUrl}");
             //}
 
             //outputBox.GetComponent<TextMeshProUGUI>().text = sb.ToString();
@@ -247,17 +292,17 @@ public class HttpManager : MonoBehaviour
             {
                 var book = books[i];
                 StartCoroutine(LoadImageFromUrl(book.imageUrl, coverImages[i]));
-                coverImages[i].transform.GetChild(1).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; // ³ªÁß¿¡ ÀÛ°¡ ÀÌ¸§ ´õÇÏ±â ////////////////
+                coverImages[i].transform.GetChild(1).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; // ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½Û°ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½ ////////////////
             }
         }));
     }
 
     #endregion
 
-    // ÀÌ¹ÌÁö URL À» ¹Þ¾Æ¿Í ÀÌ¹ÌÁö·Î ·Îµå
+    // ï¿½Ì¹ï¿½ï¿½ï¿½ URL ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
     public IEnumerator LoadImageFromUrl(string url, UnityEngine.UI.Image coverImage)
     {
-        // ÇÁ·ÎÅäÄÝÀ» https·Î °­Á¦ º¯°æ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ httpsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (url.StartsWith("http://"))
             url = "https://" + url.Substring(7);
 
@@ -276,13 +321,13 @@ public class HttpManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"ÀÌ¹ÌÁö ºÒ·¯¿À±â ½ÇÆÐ: {request.error}");
+                Debug.LogError($"ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: {request.error}");
             }
         }
     }
 
-    #region Åë½Å °ü·Ã ÇÔ¼ö
-    // ¿äÃ»¿¡ µû¶ó ÀÀ´ä Å¸ÀÔ ´Ù¸§ -> DoneRequest ´ë½Å Callback(onSuccess) »ç¿ë 
+    #region ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
+    // ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½Ù¸ï¿½ -> DoneRequest ï¿½ï¿½ï¿½ Callback(onSuccess) ï¿½ï¿½ï¿½ 
     public IEnumerator SendRequest(HttpInfo info, System.Action<object> onSuccess)
     {
         UnityWebRequest request;
@@ -320,13 +365,13 @@ public class HttpManager : MonoBehaviour
                     onSuccess?.Invoke(bookList.recommendations);
                     break;
                 default:
-                    Debug.Log("ÀÀ´ä Å¸ÀÔ ¾øÀ½");
+                    Debug.Log("ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
                     break;
             }
         }
         else
         {
-            Debug.LogError("¿äÃ» ½ÇÆÐ: " + request.error);
+            Debug.LogError("ï¿½ï¿½Ã» ï¿½ï¿½ï¿½ï¿½: " + request.error);
         }
     }
 

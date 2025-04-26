@@ -14,6 +14,15 @@ public class UIManager : MonoBehaviour
     public TMP_InputField inputChat;
     public GameObject content;
 
+    public GameObject keywordPanel;
+    public GameObject text_keyword;
+
+    public GameObject loadingBar;
+
+    public Button btn_sendChat;
+    public Button btn_Recommand;
+
+
     void Awake()
     {
         if (null == instance)
@@ -40,7 +49,10 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        
+
+        loadingBar.SetActive(false);
+        //btn_sendChat.onClick.AddListener(HttpManager.Instance.OnClickSendChat);
+        //btn_Recommand.onClick.AddListener(HttpManager.Instance.OnClickGetBookRecommendation);
     }
 
     void Update()
