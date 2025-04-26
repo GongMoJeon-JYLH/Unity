@@ -16,9 +16,9 @@ public class Rec2Setting : MonoBehaviour
 
     float width;
     Vector2 originalPos;
-    Vector2 newPos = new Vector2(-500, -540);
+    Vector2 newPos = new Vector2(0, -1080);
     Vector2 originalSize;
-    Vector2 newSize = new Vector2(1000, 1080);
+    Vector2 newSize = new Vector2(1100, 750);
 
     bool expanded = false;
 
