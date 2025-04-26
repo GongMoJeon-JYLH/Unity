@@ -1,6 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using TMPro.Examples;
 
 
 public class UIManager : MonoBehaviour
@@ -11,6 +12,8 @@ public class UIManager : MonoBehaviour
     public ScrollRect srollChatWindow;
     public GameObject aiChat;
     public GameObject userChat;
+
+    public TextMeshProUGUI tmp_Chat;
     public TMP_InputField inputChat;
     public GameObject content;
     public GameObject panel_chat;
@@ -50,6 +53,9 @@ public class UIManager : MonoBehaviour
     {
 
         loadingBar.SetActive(false);
+        tmp_Chat.text = "<color=#00FFFF>추천봇</color>: 혹시 최근에 인상 깊게 읽었던 책이나 관심 있는 주제가 있으신가요?";
+
+        PanelChange(true);
         //btn_sendChat.onClick.AddListener(HttpManager.Instance.OnClickSendChat);
         //btn_Recommand.onClick.AddListener(HttpManager.Instance.OnClickGetBookRecommendation);
     }
@@ -58,4 +64,12 @@ public class UIManager : MonoBehaviour
     {
         
     }
+
+    public void PanelChange(bool isOn)
+    {
+        panel_name.SetActive(isOn);
+        panel_chat.SetActive(!isOn);
+    }
+
+   
 }

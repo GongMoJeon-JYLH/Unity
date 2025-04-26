@@ -153,6 +153,8 @@ public class HttpManager : MonoBehaviour
             FullLoginData response = (FullLoginData)result;
             thisUserInfo.name = response.name;
             thisUserInfo.userId = response.userId;
+            UIManager.Instance.PanelChange(false);
+
         }));
     }
 
@@ -167,8 +169,10 @@ public class HttpManager : MonoBehaviour
             return;
 
         UIManager.Instance.loadingBar.SetActive(true);
-        GameObject userChat = GameObject.Instantiate(UIManager.Instance.userChat, UIManager.Instance.content.transform);
-        userChat.GetComponent<TextMeshProUGUI>().text += userMessage;
+        UIManager.Instance.tmp_Chat.text += "\n <color=blue>나</color>:" + userMessage;
+        
+        //GameObject userChatObject = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
+        //userChatObject.GetComponent<TextMeshProUGUI>().text = "나: " + userMessage;
 
 
         ChatData chatData = new ChatData
@@ -190,9 +194,9 @@ public class HttpManager : MonoBehaviour
         {
             ChatResponse response = (ChatResponse)result;
             //outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
-
-            GameObject aiChat = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
-            userChat.GetComponent<TextMeshProUGUI>().text += response.responseText;
+            UIManager.Instance.tmp_Chat.text += "\n <color=#00FFFF>추천봇</color>:" + response.responseText;
+            //GameObject aiChatObject = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
+            //aiChatObject.GetComponent<TextMeshProUGUI>().text = "추천봇: " + response.responseText;
 
             UIManager.Instance.loadingBar.SetActive(false);
 
