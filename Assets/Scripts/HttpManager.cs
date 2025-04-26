@@ -189,6 +189,10 @@ public class HttpManager : MonoBehaviour
         {
             ChatResponse response = (ChatResponse)result;
             outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
+
+            GameObject aiChat = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
+            userChat.GetComponent<TextMeshProUGUI>().text += response.responseText;
+
             if (response.canRecommend)
             {
                 btn_getRec.interactable = true;
@@ -203,10 +207,22 @@ public class HttpManager : MonoBehaviour
     public BookResponse[] books = new BookResponse[3];
     public UnityEngine.UI.Image coverImage;
 
+    public BookListResponse list;
 
     // 로그인 데이터를 보내고 책 추천을 받아옴
     public void OnClickGetBookRecommendation()
     {
+        GameObject go = Instantiate(UIManager.Instance.text_keyword, UIManager.Instance.keywordPanel.transform);
+
+        // 키워드 텍스트 입히기 
+        go.GetComponent<TextMeshProUGUI>().text = "판타지???";
+
+        // 키워드 위치 설정
+        go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
+        go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
+
+
+
         HttpInfo info = new HttpInfo
         {
             url = server + "/book-recommend",
@@ -220,6 +236,23 @@ public class HttpManager : MonoBehaviour
         {
             btn_expand.interactable = true;
             books = (BookResponse[])result;
+
+            list = (BookListResponse)result;
+
+
+
+            for (int i = 0; i < list.keywords.Length; i++)
+            {
+                GameObject go = Instantiate(UIManager.Instance.text_keyword, UIManager.Instance.keywordPanel.transform);
+
+                // 키워드 텍스트 입히기 
+                go.GetComponent<TextMeshProUGUI>().text = list.keywords[i];
+
+                // 키워드 위치 설정
+                go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
+                go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
+
+            }
 
             toggleSetting.SetBookUI(0, coverImage);
             StartCoroutine(LoadImageFromUrl(books[0].imageUrl, coverImage));
