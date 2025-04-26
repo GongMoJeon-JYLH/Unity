@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using static UnityEngine.Rendering.VolumeComponent;
 
 public enum ResponseType
 {
@@ -202,7 +203,7 @@ public class HttpManager : MonoBehaviour
     // 받아온 책 추천 일단 배열로 저장, 그 외 업데이트할 나머지 UI 요소들도 받아옴
     public BookResponse[] books = new BookResponse[3];
     public UnityEngine.UI.Image coverImage;
-
+    const int INDENT = 150;
 
     // 로그인 데이터를 보내고 책 추천을 받아옴
     public void OnClickGetBookRecommendation()
@@ -221,7 +222,14 @@ public class HttpManager : MonoBehaviour
             btn_expand.interactable = true;
             books = (BookResponse[])result;
 
-            toggleSetting.SetBookUI(0, coverImage);
+            var firstBook = books[0];
+            string[] texts = new string[]
+            {
+                $"제목<indent={INDENT}>: </indent>", firstBook.bookTitle, $"키워드<indent={INDENT}>: </indent>", firstBook.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", firstBook.bookSummary, $"링크<indent={INDENT}>: </indent>", firstBook.bookUrl
+            };
+
+            //toggleSetting.SetBookUI(0, coverImage);
+            toggleSetting.SetTextBoxes(texts);
             StartCoroutine(LoadImageFromUrl(books[0].imageUrl, coverImage));
 
             //StringBuilder sb = new StringBuilder();

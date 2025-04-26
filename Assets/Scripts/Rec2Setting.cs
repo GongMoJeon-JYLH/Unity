@@ -10,10 +10,8 @@ public class Rec2Setting : MonoBehaviour
     public Image panel;
     public Button btn_expand;
     public Image coverImage;
-    public TMP_Text textBox;
 
     float width;
-    float textBoxWidth;
     Vector2 originalPos;
     Vector2 newPos = new Vector2(-500, -540);
     Vector2 originalSize;
@@ -29,8 +27,6 @@ public class Rec2Setting : MonoBehaviour
         width = panel.rectTransform.sizeDelta.x;
         originalPos = panel.rectTransform.anchoredPosition;
         originalSize = panel.rectTransform.sizeDelta;
-
-        textBoxWidth = textBox.rectTransform.sizeDelta.x;
     }
 
     // 토글 Expand
@@ -115,7 +111,7 @@ public class Rec2Setting : MonoBehaviour
     public GameObject rowPrefab;
     int columns = 2;
 
-    void SetTextBoxes(string[] texts)
+    public void SetTextBoxes(string[] texts)
     {
         for (int i = 0; i < texts.Length; i = i + 2)
         {
@@ -161,21 +157,21 @@ public class Rec2Setting : MonoBehaviour
 
 
 
-    public void SetBookUI(int bookIdx, Image coverImage)
-    {
-        var book = HttpManager.Instance.books[bookIdx];
-        coverImage.transform.GetChild(0).GetComponent<TMP_Text>().text = book.bookTitle;
-        coverImage.transform.GetChild(1).GetComponentInChildren<TMP_Text>().text = FormatLine("제목", book.bookTitle) + "\n" +
-                                                                         FormatLine("키워드", book.bookGenre) + "\n" +
-                                                                         FormatLine("내용 요약", book.bookSummary) + "\n" +
-                                                                         FormatLine("링크", book.bookUrl);
-    }
+    //public void SetBookUI(int bookIdx, Image coverImage)
+    //{
+    //    var book = HttpManager.Instance.books[bookIdx];
+    //    coverImage.transform.GetChild(0).GetComponent<TMP_Text>().text = book.bookTitle;
+    //    coverImage.transform.GetChild(1).GetComponentInChildren<TMP_Text>().text = FormatLine("제목", book.bookTitle) + "\n" +
+    //                                                                     FormatLine("키워드", book.bookGenre) + "\n" +
+    //                                                                     FormatLine("내용 요약", book.bookSummary) + "\n" +
+    //                                                                     FormatLine("링크", book.bookUrl);
+    //}
 
-    // 문자열 간격 조정
-    public string FormatLine(string category, string content)
-    {
-        int mspace = 24;
-        string monoCat = $"<mspace={mspace}>{category}</mspace>";
-        return $"{monoCat} : {content}";
-    }
+    //// 문자열 간격 조정
+    //public string FormatLine(string category, string content)
+    //{
+    //    int mspace = 24;
+    //    string monoCat = $"<mspace={mspace}>{category}</mspace>";
+    //    return $"{monoCat} : {content}";
+    //}
 }
