@@ -2029,6 +2029,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!1 &1545171441 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3300457836163935803, guid: a36ff3d2efac1f6419ca7ab96a84efff, type: 3}
+  m_PrefabInstance: {fileID: 223248393655579542}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1606673317
 GameObject:
   m_ObjectHideFlags: 0
@@ -2526,6 +2531,7 @@ MonoBehaviour:
   btn_expand: {fileID: 1815865521}
   btn_getRec: {fileID: 132714225}
   toggleSetting: {fileID: 400352741}
+  content: {fileID: 1545171441}
   coverImages:
   - {fileID: 1788321704}
   - {fileID: 202443100}
@@ -3237,10 +3243,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 8772888642798224924, guid: a36ff3d2efac1f6419ca7ab96a84efff, type: 3}
-    - {fileID: 4761649877195087029, guid: a36ff3d2efac1f6419ca7ab96a84efff, type: 3}
-    - {fileID: 7715350455792840829, guid: a36ff3d2efac1f6419ca7ab96a84efff, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a36ff3d2efac1f6419ca7ab96a84efff, type: 3}
