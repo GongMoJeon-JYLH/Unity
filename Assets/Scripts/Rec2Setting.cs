@@ -200,4 +200,6 @@ public class Rec2Setting : MonoBehaviour
         StartCoroutine(HttpManager.Instance.LoadImageFromUrl(book.imageUrl, coverImage));
         coverImage.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n";
     }
+
+
 }
