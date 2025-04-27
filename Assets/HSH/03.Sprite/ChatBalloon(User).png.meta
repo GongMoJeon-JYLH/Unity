@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ChatBalloon(User)_0: -134044087154181109
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

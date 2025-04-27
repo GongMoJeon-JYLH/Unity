@@ -53,6 +53,8 @@ MonoBehaviour:
   btn_clickChat: {fileID: 0}
   userIcon: {fileID: 21300000, guid: e94da70b5920ec84fa0b40f92c96cc61, type: 3}
   aIcon: {fileID: 21300000, guid: a39fc8d1e25f87946bfb2782d53061a9, type: 3}
+  userBalloon: {fileID: -134044087154181109, guid: 918325cb07c031048b491b129a5edf93, type: 3}
+  aiBalloon: {fileID: 1286100468456907628, guid: 6dbd4333131acfb488418bf38419275e, type: 3}
   panel_chat: {fileID: 0}
   panel_name: {fileID: 0}
   keywordPanel: {fileID: 0}
