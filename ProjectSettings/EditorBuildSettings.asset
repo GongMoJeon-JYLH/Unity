@@ -14,10 +14,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/HSH/00.Scene/MainScene_HSH1.unity
     guid: b5908f773f18dae4fac4a6b61d4be17a
-  - enabled: 0
+  - enabled: 1
     path: Assets/HSH/00.Scene/MainScene_HSH1 1.unity
     guid: 1f09e7a18b5c0e94eb2c04381e5f0f23
-  - enabled: 1
+  - enabled: 0
     path: Assets/HSH/00.Scene/MainScene_YDW2.unity
     guid: e3fa41cbf1dae874b9ec43e9cb2dfdca
   m_configObjects:

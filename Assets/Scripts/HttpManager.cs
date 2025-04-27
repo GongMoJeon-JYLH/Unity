@@ -191,6 +191,8 @@ public class HttpManager : MonoBehaviour
         if (string.IsNullOrWhiteSpace(userMessage))
             return;
 
+
+        UIManager.Instance.inputChat.interactable = false;
         UIManager.Instance.loadingBar.SetActive(true);
         //UIManager.Instance.tmp_Chat.text += "\n <color=blue>나</color>:" + userMessage;
         UIManager.Instance.btn_clickChat.GetComponent<ButtonManager>().isInteractable = false;
@@ -199,7 +201,7 @@ public class HttpManager : MonoBehaviour
         //image.sprite = UIManager.Instance.userIcon;
         //userChatObject.GetComponentInChildren<TextMeshProUGUI>().text = ": " + userMessage;
 
-        UIManager.Instance.SetHeight(": " + userMessage, UIManager.Instance.userIcon);
+        UIManager.Instance.SetHeight(": " + userMessage, UIManager.Instance.userIcon, UIManager.Instance.userBalloon);
 
 
         ChatData chatData = new ChatData
@@ -227,20 +229,18 @@ public class HttpManager : MonoBehaviour
             //image.sprite = UIManager.Instance.aIcon;
             //aiChatObject.GetComponentInChildren<TextMeshProUGUI>().text = ": " + response.responseText;
 
-            UIManager.Instance.SetHeight(": " + response.responseText, UIManager.Instance.aIcon);
+            UIManager.Instance.SetHeight(": " + response.responseText, UIManager.Instance.aIcon, UIManager.Instance.aiBalloon);
 
 
             UIManager.Instance.loadingBar.SetActive(false);
 
-
-            if (response.canRecommend)
-            {
-                btn_getRec.GetComponent<ButtonManager>().isInteractable = true;
-
-            }
-
+            print(response.canRecommend);
+            
+            btn_getRec.GetComponent<ButtonManager>().isInteractable = response.canRecommend;
             UIManager.Instance.inputChat.GetComponent<TMP_InputField>().text = "";
             UIManager.Instance.btn_clickChat.GetComponent<ButtonManager>().isInteractable = true;
+            UIManager.Instance.inputChat.interactable = true;
+
 
 
         }));
@@ -266,6 +266,7 @@ public class HttpManager : MonoBehaviour
         // Ű���� ��ġ ����
         //go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
         //go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
+        UIManager.Instance.loadingBar.SetActive(true);
 
 
         HttpInfo info = new HttpInfo
@@ -292,8 +293,8 @@ public class HttpManager : MonoBehaviour
                 go.GetComponent<TextMeshProUGUI>().text = list.keywords[i];
 
                 // Ű���� ��ġ ����
-                go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
-                go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
+                //go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
+                //go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
             }
 
             UIManager.Instance.tmp_userType.text = "유저타입: " + list.userType;
@@ -308,6 +309,10 @@ public class HttpManager : MonoBehaviour
                 StartCoroutine(LoadImageFromUrl(book.imageUrl, coverImages[i]));
                 coverImages[i].transform.GetChild(0).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; 
             }
+
+            UIManager.Instance.loadingBar.SetActive(false);
+            UIManager.Instance.btn_switchPanel.GetComponent<ButtonManager>().isInteractable = true;
+
         }));
     }
 

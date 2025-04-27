@@ -25,6 +25,9 @@ public class UIManager : MonoBehaviour
     // 채팅 아이콘
     public Sprite userIcon;
     public Sprite aIcon;
+    // 말풍선
+    public Sprite userBalloon;
+    public Sprite aiBalloon;
 
     // 이름 패널, 채팅 패널
     public GameObject panel_chat;
@@ -42,8 +45,8 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI tmp_userTypeReason;
 
     private bool isPanelActive = true;
-    
 
+    private string aiTalk;
     void Awake()
     {
         if (null == instance)
@@ -77,6 +80,9 @@ public class UIManager : MonoBehaviour
         PanelChange(true);
         //btn_sendChat.onClick.AddListener(HttpManager.Instance.OnClickSendChat);
         //btn_Recommand.onClick.AddListener(HttpManager.Instance.OnClickGetBookRecommendation);
+        btn_switchPanel.GetComponent<ButtonManager>().isInteractable = false;
+
+        aiTalk = ": 혹시 최근에 인상 깊게 읽었던 책이나 관심 있는 주제가 있으신가요?";
     }
 
     void Update()
@@ -88,6 +94,8 @@ public class UIManager : MonoBehaviour
     {
         panel_name.SetActive(isOn);
         panel_chat.SetActive(!isOn);
+
+        SetHeight(aiTalk, aIcon, aiBalloon);
     }
 
     public void OnClickSwitchPanel()
@@ -104,14 +112,16 @@ public class UIManager : MonoBehaviour
         {
             btn_switchPanel.GetComponent<ButtonManager>().buttonText = "유저타입!";
         }
-        //print(isPanelActive); 
+        print(btn_switchPanel.GetComponent<ButtonManager>().buttonText); 
 
     }
 
-    public void SetHeight(string text, Sprite sprite)
+    public void SetHeight(string text, Sprite sprite, Sprite balloon)
     {
         GameObject row = Instantiate(aiChat);
         row.transform.SetParent(content.transform, false);
+
+        row.GetComponent<Image>().sprite = balloon;
 
         Image image = row.transform.GetChild(1).GetComponent<Image>();
         image.sprite = sprite;
