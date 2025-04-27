@@ -6,9 +6,11 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.U2D;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
+//using UnityEngine.UIElements;
 using static ScrollViewTest;
+using static System.Net.Mime.MediaTypeNames;
 using static UnityEngine.Rendering.VolumeComponent;
 
 public enum ResponseType
@@ -192,8 +194,12 @@ public class HttpManager : MonoBehaviour
         UIManager.Instance.loadingBar.SetActive(true);
         //UIManager.Instance.tmp_Chat.text += "\n <color=blue>나</color>:" + userMessage;
         UIManager.Instance.btn_clickChat.GetComponent<ButtonManager>().isInteractable = false;
-        GameObject userChatObject = GameObject.Instantiate(UIManager.Instance.userChat, UIManager.Instance.content.transform);
-        userChatObject.GetComponent<TextMeshProUGUI>().text = "나: " + userMessage;
+        //GameObject userChatObject = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
+        //Image image = userChatObject.transform.GetChild(1).GetComponent<Image>();
+        //image.sprite = UIManager.Instance.userIcon;
+        //userChatObject.GetComponentInChildren<TextMeshProUGUI>().text = ": " + userMessage;
+
+        UIManager.Instance.SetHeight(": " + userMessage, UIManager.Instance.userIcon);
 
 
         ChatData chatData = new ChatData
@@ -216,8 +222,13 @@ public class HttpManager : MonoBehaviour
             ChatResponse response = (ChatResponse)result;
             //outputBox.GetComponent<TextMeshProUGUI>().text = response.responseText;
             //UIManager.Instance.tmp_Chat.text += "\n <color=#00FFFF>추천봇</color>:" + response.responseText;
-            GameObject aiChatObject = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
-            aiChatObject.GetComponent<TextMeshProUGUI>().text = "추천봇: " + response.responseText;
+            //GameObject aiChatObject = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
+            //Image image = userChatObject.transform.GetChild(1).GetComponent<Image>();
+            //image.sprite = UIManager.Instance.aIcon;
+            //aiChatObject.GetComponentInChildren<TextMeshProUGUI>().text = ": " + response.responseText;
+
+            UIManager.Instance.SetHeight(": " + response.responseText, UIManager.Instance.aIcon);
+
 
             UIManager.Instance.loadingBar.SetActive(false);
 

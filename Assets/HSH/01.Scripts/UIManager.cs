@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using TMPro.Examples;
 using Michsky.MUIP;
+using System.Collections;
 
 
 public class UIManager : MonoBehaviour
@@ -21,6 +22,9 @@ public class UIManager : MonoBehaviour
     public GameObject loadingBar;
     // 채팅 입력
     public GameObject btn_clickChat;
+    // 채팅 아이콘
+    public Sprite userIcon;
+    public Sprite aIcon;
 
     // 이름 패널, 채팅 패널
     public GameObject panel_chat;
@@ -100,8 +104,46 @@ public class UIManager : MonoBehaviour
         {
             btn_switchPanel.GetComponent<ButtonManager>().buttonText = "유저타입!";
         }
-        print(isPanelActive); 
+        //print(isPanelActive); 
 
+    }
+
+    public void SetHeight(string text, Sprite sprite)
+    {
+        GameObject row = Instantiate(aiChat);
+        row.transform.SetParent(content.transform, false);
+
+        Image image = row.transform.GetChild(1).GetComponent<Image>();
+        image.sprite = sprite;
+        // Row의 RectTransform 설정
+        RectTransform rowRect = row.GetComponent<RectTransform>();
+        rowRect.anchorMin = new Vector2(0f, 1f); // 상단 정렬
+        rowRect.anchorMax = new Vector2(1f, 1f);  // 상단 정렬
+        rowRect.pivot = new Vector2(0f, 1f);    // 기준점 좌측 상단
+        rowRect.offsetMin = new Vector2(0f, rowRect.offsetMin.y); // 왼쪽 offset 0
+        rowRect.offsetMax = new Vector2(0f, rowRect.offsetMax.y); // 오른쪽 offset 0
+
+        // Content의 VerticalLayoutGroup 설정
+        VerticalLayoutGroup vlg = content.GetComponent<VerticalLayoutGroup>();
+
+        TextMeshProUGUI txt1 = row.transform.GetChild(0).GetComponentInChildren<TextMeshProUGUI>();
+
+        txt1.text = text;
+
+        StartCoroutine(UpdateHeight(row, txt1));
+
+    }
+    IEnumerator UpdateHeight(GameObject row, TextMeshProUGUI txt1)
+    {
+        yield return new WaitForEndOfFrame(); // 1 프레임 기다리기
+
+        LayoutElement loe = row.GetComponent<LayoutElement>();
+        if (loe == null)
+        {
+            loe = row.gameObject.AddComponent<LayoutElement>();
+        }
+
+        loe.preferredHeight = txt1.preferredHeight;
     }
 
 }
