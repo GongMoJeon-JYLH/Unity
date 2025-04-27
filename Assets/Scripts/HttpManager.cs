@@ -192,7 +192,7 @@ public class HttpManager : MonoBehaviour
         UIManager.Instance.loadingBar.SetActive(true);
         //UIManager.Instance.tmp_Chat.text += "\n <color=blue>나</color>:" + userMessage;
         UIManager.Instance.btn_clickChat.GetComponent<ButtonManager>().isInteractable = false;
-        GameObject userChatObject = GameObject.Instantiate(UIManager.Instance.aiChat, UIManager.Instance.content.transform);
+        GameObject userChatObject = GameObject.Instantiate(UIManager.Instance.userChat, UIManager.Instance.content.transform);
         userChatObject.GetComponent<TextMeshProUGUI>().text = "나: " + userMessage;
 
 
@@ -295,6 +295,9 @@ public class HttpManager : MonoBehaviour
                 go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
 
             }
+
+            UIManager.Instance.tmp_userType.text = "유저타입: " + list.userType;
+            UIManager.Instance.tmp_userTypeReason.text = "이유: " + list.userTypeReason;
 
             coverImage.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = $"<{books[0].bookTitle}>\n";
             StartCoroutine(LoadImageFromUrl(books[0].imageUrl, coverImage));

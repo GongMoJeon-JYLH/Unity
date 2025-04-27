@@ -33,8 +33,12 @@ public class UIManager : MonoBehaviour
 
     public GameObject userTypePanel;
     public GameObject btn_switchPanel;
-    bool isPanelActive = true;
 
+    public TextMeshProUGUI tmp_userType;
+    public TextMeshProUGUI tmp_userTypeReason;
+
+    private bool isPanelActive = true;
+    
 
     void Awake()
     {
