@@ -132,6 +132,16 @@ public class Rec2Setting : MonoBehaviour
             TextMeshProUGUI txt1 = row.transform.GetChild(0).GetComponentInChildren<TextMeshProUGUI>();
             TextMeshProUGUI txt2 = row.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
 
+            if (texts[i] == "")
+            {
+                texts[i] = "없음";
+            }
+
+            if (texts[i + 1] == "")
+            {
+                texts[i + 1] = "없음";
+            }
+
             txt1.text = texts[i];
             txt2.text = texts[i + 1];
 
@@ -139,8 +149,6 @@ public class Rec2Setting : MonoBehaviour
             StartCoroutine(UpdateWidth(txt1));
             StartCoroutine(UpdateHeight(row, txt1, txt2));
         }
-
-        StartCoroutine(ForceRebuildLayoutNextFrame());
     }
 
     public void ClearContent()
@@ -164,23 +172,17 @@ public class Rec2Setting : MonoBehaviour
         loe.preferredHeight = Mathf.Max(txt1.preferredHeight, txt2.preferredHeight);
     }
 
-    IEnumerator UpdateWidth(TextMeshProUGUI txt1)
+    IEnumerator UpdateWidth(TextMeshProUGUI txt)
     {
         yield return new WaitForEndOfFrame();
 
-        LayoutElement loe1 = txt1.gameObject.GetComponent<LayoutElement>();
+        LayoutElement loe1 = txt.gameObject.GetComponent<LayoutElement>();
         if (loe1 == null)
         {
-            loe1 = txt1.gameObject.AddComponent<LayoutElement>();
+            loe1 = txt.gameObject.AddComponent<LayoutElement>();
         }
 
-        loe1.preferredWidth = txt1.preferredWidth;
-    }
-
-    IEnumerator ForceRebuildLayoutNextFrame()
-    {
-        yield return null; // 1프레임 기다리고
-        LayoutRebuilder.ForceRebuildLayoutImmediate(content.GetComponent<RectTransform>());
+        loe1.preferredWidth = txt.preferredWidth;
     }
 
     // 책 표지 세 개에 각각 인덱스 달리 해서 붙여둠
@@ -191,7 +193,7 @@ public class Rec2Setting : MonoBehaviour
 
         string[] texts = new string[]
         {
-            $"제목<indent={INDENT}>: </indent>", book.bookTitle, $"작가<indent={INDENT}>: </indent>", book.author, $"키워드<indent={INDENT}>: </indent>", book.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", book.bookSummary, $"링크<indent={INDENT}>: </indent>", book.bookUrl
+            $"제목<indent={INDENT}>: </indent>", book.bookTitle, $"작가<indent={INDENT}>: </indent>", book.author, $"키워드<indent={INDENT}>: </indent>", book.bookKeyword, $"내용 요약<indent={INDENT}>: </indent>", book.bookSummary, $"링크<indent={INDENT}>: </indent>", book.bookUrl
         };
 
         SetTextBoxes(texts);
