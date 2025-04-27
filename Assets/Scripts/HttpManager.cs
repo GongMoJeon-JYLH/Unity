@@ -284,16 +284,6 @@ public class HttpManager : MonoBehaviour
             list = (BookListResponse)result;
             books = list.recommendations;
 
-
-            var firstBook = books[0];
-            string[] texts = new string[]
-            {
-                $"제목<indent={INDENT}>: </indent>", firstBook.bookTitle, $"작가<indent={INDENT}>: </indent>", firstBook.author, $"키워드<indent={INDENT}>: </indent>", firstBook.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", firstBook.bookSummary, $"링크<indent={INDENT}>: </indent>", firstBook.bookUrl
-            };
-
-            //toggleSetting.SetBookUI(0, coverImage);
-            toggleSetting.SetTextBoxes(texts);
-
             for (int i = 0; i < list.keywords.Length; i++)
             {
                 GameObject go = Instantiate(UIManager.Instance.text_keyword, UIManager.Instance.keywordPanel.transform);
@@ -304,7 +294,6 @@ public class HttpManager : MonoBehaviour
                 // Ű���� ��ġ ����
                 go.GetComponent<RectTransform>().anchoredPosition = new Vector2(UnityEngine.Random.Range(-270.0f, 270.0f), UnityEngine.Random.Range(-140.0f, 140.0f));
                 go.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(-70.0f, 70.0f));
-
             }
 
             UIManager.Instance.tmp_userType.text = "유저타입: " + list.userType;
