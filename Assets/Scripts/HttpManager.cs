@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using static ScrollViewTest;
 using static UnityEngine.Rendering.VolumeComponent;
 
 public enum ResponseType
@@ -27,7 +28,7 @@ public struct HttpInfo
     public ResponseType responseType;
 }
 
-// ��û ������ ������
+// 보내는 구조체
 [System.Serializable] 
 public struct LoginData
 {
@@ -41,7 +42,7 @@ public struct ChatData
     public string userId;
 }
 
-// ���� ������ ������
+// 받아오는 구조체
 [System.Serializable]
 public struct FullLoginData
 {
@@ -74,6 +75,7 @@ public struct BookResponse
     public string bookUrl;
     public string bookSummary;
     public string bookGenre;
+    public string author;
 }
 
 
@@ -275,14 +277,11 @@ public class HttpManager : MonoBehaviour
             var firstBook = books[0];
             string[] texts = new string[]
             {
-                $"제목<indent={INDENT}>: </indent>", firstBook.bookTitle, $"키워드<indent={INDENT}>: </indent>", firstBook.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", firstBook.bookSummary, $"링크<indent={INDENT}>: </indent>", firstBook.bookUrl
-                //$"���� : ", firstBook.bookTitle, $"Ű���� : ", firstBook.bookGenre, $"���� ��� : ", firstBook.bookSummary, $"��ũ :", firstBook.bookUrl
+                $"제목<indent={INDENT}>: </indent>", firstBook.bookTitle, $"작가<indent={INDENT}>: </indent>", firstBook.author, $"키워드<indent={INDENT}>: </indent>", firstBook.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", firstBook.bookSummary, $"링크<indent={INDENT}>: </indent>", firstBook.bookUrl
             };
 
             //toggleSetting.SetBookUI(0, coverImage);
             toggleSetting.SetTextBoxes(texts);
-
-
 
             for (int i = 0; i < list.keywords.Length; i++)
             {
@@ -297,25 +296,14 @@ public class HttpManager : MonoBehaviour
 
             }
 
-            ////////////toggleSetting.SetBookUI(0, coverImage);
-
+            coverImage.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = $"<{books[0].bookTitle}>\n";
             StartCoroutine(LoadImageFromUrl(books[0].imageUrl, coverImage));
-
-            //StringBuilder sb = new StringBuilder();
-            //foreach (BookResponse book in books)
-            //{
-            //    sb.AppendLine($"<b>å �帣</b> : {book.bookGenre}\n<b>��õ����</b> : {book.bookReason}\n<b>���� ���</b> : {book.bookSummary}\n<b>��ũ</b> :{book.bookUrl}\n<b>��ũ</b> :{book.bookUrl}");
-            //}
-
-            //outputBox.GetComponent<TextMeshProUGUI>().text = sb.ToString();
-
-            //Debug.Log(books[0].imageUrl);
 
             for (int i = 0; i < books.Length; i++)
             {
                 var book = books[i];
                 StartCoroutine(LoadImageFromUrl(book.imageUrl, coverImages[i]));
-                coverImages[i].transform.GetChild(1).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; // 나중에 작가 이름 더하기 ////////////////
+                coverImages[i].transform.GetChild(0).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n"; 
             }
         }));
     }
