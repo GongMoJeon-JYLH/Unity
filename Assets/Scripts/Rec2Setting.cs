@@ -24,7 +24,6 @@ public class Rec2Setting : MonoBehaviour
 
     public GameObject[] coverImages;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         width = panel.rectTransform.sizeDelta.x;
@@ -37,8 +36,6 @@ public class Rec2Setting : MonoBehaviour
     {
         if (!expanded)
         {
-            //panel.rectTransform.anchoredPosition = newPos;
-            //panel.rectTransform.sizeDelta = newSize;
             StartCoroutine(AnimateSize(panel.rectTransform.sizeDelta, newSize, 0.5f));
             btn_expand.GetComponent<ButtonManager>().buttonText = "닫기"; 
 
@@ -51,8 +48,6 @@ public class Rec2Setting : MonoBehaviour
         }
         else
         {
-            //panel.rectTransform.anchoredPosition = originalPos;
-            //panel.rectTransform.sizeDelta = originalSize;
             StartCoroutine(AnimateSize(panel.rectTransform.sizeDelta, originalSize, 0.5f));
             btn_expand.GetComponent<ButtonManager>().buttonText = "펼치기";
 
@@ -116,6 +111,8 @@ public class Rec2Setting : MonoBehaviour
 
     public void SetTextBoxes(string[] texts)
     {
+        ClearContent();
+
         for (int i = 0; i < texts.Length; i = i + 2)
         {
             GameObject row = Instantiate(rowPrefab);
@@ -142,11 +139,21 @@ public class Rec2Setting : MonoBehaviour
             StartCoroutine(UpdateWidth(txt1));
             StartCoroutine(UpdateHeight(row, txt1, txt2));
         }
+
+        StartCoroutine(ForceRebuildLayoutNextFrame());
+    }
+
+    public void ClearContent()
+    {
+        for (int i = content.childCount - 1; i >= 0; i--)
+        {
+            Destroy(content.GetChild(i).gameObject);
+        }
     }
 
     IEnumerator UpdateHeight(GameObject row, TextMeshProUGUI txt1, TextMeshProUGUI txt2)
     {
-        yield return null; // 1 프레임 기다리기
+        yield return new WaitForEndOfFrame(); // 1 프레임 기다리기
 
         LayoutElement loe = row.GetComponent<LayoutElement>();
         if (loe == null)
@@ -159,7 +166,7 @@ public class Rec2Setting : MonoBehaviour
 
     IEnumerator UpdateWidth(TextMeshProUGUI txt1)
     {
-        yield return null;
+        yield return new WaitForEndOfFrame();
 
         LayoutElement loe1 = txt1.gameObject.GetComponent<LayoutElement>();
         if (loe1 == null)
@@ -167,17 +174,16 @@ public class Rec2Setting : MonoBehaviour
             loe1 = txt1.gameObject.AddComponent<LayoutElement>();
         }
 
-        //LayoutElement loe2 = txt2.gameObject.GetComponent<LayoutElement>();
-        //if (loe1 == null)
-        //{
-        //    loe2 = txt2.gameObject.AddComponent<LayoutElement>();
-        //}
-
         loe1.preferredWidth = txt1.preferredWidth;
-        //loe2.preferredWidth = txt2.preferredWidth;
-
     }
 
+    IEnumerator ForceRebuildLayoutNextFrame()
+    {
+        yield return null; // 1프레임 기다리고
+        LayoutRebuilder.ForceRebuildLayoutImmediate(content.GetComponent<RectTransform>());
+    }
+
+    // 책 표지 세 개에 각각 인덱스 달리 해서 붙여둠
     public void SetMainDetailText(int idx)
     {
         var book = HttpManager.Instance.books[idx];
@@ -185,29 +191,11 @@ public class Rec2Setting : MonoBehaviour
 
         string[] texts = new string[]
         {
-            $"제목<indent={INDENT}>: </indent>", book.bookTitle, $"키워드<indent={INDENT}>: </indent>", book.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", book.bookSummary, $"링크<indent={INDENT}>: </indent>", book.bookUrl
+            $"제목<indent={INDENT}>: </indent>", book.bookTitle, $"작가<indent={INDENT}>: </indent>", book.author, $"키워드<indent={INDENT}>: </indent>", book.bookGenre, $"내용 요약<indent={INDENT}>: </indent>", book.bookSummary, $"링크<indent={INDENT}>: </indent>", book.bookUrl
         };
 
         SetTextBoxes(texts);
-
-        //coverImage.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = HttpManager.Instance.
+        StartCoroutine(HttpManager.Instance.LoadImageFromUrl(book.imageUrl, coverImage));
+        coverImage.gameObject.transform.GetChild(0).GetComponent<TMP_Text>().text = $"<{book.bookTitle}>\n";
     }
-
-    //public void SetBookUI(int bookIdx, Image coverImage)
-    //{
-    //    var book = HttpManager.Instance.books[bookIdx];
-    //    coverImage.transform.GetChild(0).GetComponent<TMP_Text>().text = book.bookTitle;
-    //    coverImage.transform.GetChild(1).GetComponentInChildren<TMP_Text>().text = FormatLine("제목", book.bookTitle) + "\n" +
-    //                                                                     FormatLine("키워드", book.bookGenre) + "\n" +
-    //                                                                     FormatLine("내용 요약", book.bookSummary) + "\n" +
-    //                                                                     FormatLine("링크", book.bookUrl);
-    //}
-
-    //// 문자열 간격 조정
-    //public string FormatLine(string category, string content)
-    //{
-    //    int mspace = 24;
-    //    string monoCat = $"<mspace={mspace}>{category}</mspace>";
-    //    return $"{monoCat} : {content}";
-    //}
 }

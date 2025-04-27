@@ -2538,18 +2538,21 @@ MonoBehaviour:
     bookUrl: 
     bookSummary: 
     bookGenre: 
+    author: 
   - bookTitle: 
     bookKeyword: 
     imageUrl: 
     bookUrl: 
     bookSummary: 
     bookGenre: 
+    author: 
   - bookTitle: 
     bookKeyword: 
     imageUrl: 
     bookUrl: 
     bookSummary: 
     bookGenre: 
+    author: 
   coverImage: {fileID: 1067816149}
   list:
     recommendations: []
@@ -3234,7 +3237,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8772888642798224924, guid: a36ff3d2efac1f6419ca7ab96a84efff, type: 3}
+    - {fileID: 4761649877195087029, guid: a36ff3d2efac1f6419ca7ab96a84efff, type: 3}
+    - {fileID: 7715350455792840829, guid: a36ff3d2efac1f6419ca7ab96a84efff, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a36ff3d2efac1f6419ca7ab96a84efff, type: 3}
