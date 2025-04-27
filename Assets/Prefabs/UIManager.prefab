@@ -49,8 +49,11 @@ MonoBehaviour:
   userChat: {fileID: 4430447146463915345, guid: 8db089971ec78ac4fae04b53687e5465, type: 3}
   inputChat: {fileID: 0}
   content: {fileID: 0}
+  loadingBar: {fileID: 0}
+  btn_clickChat: {fileID: 0}
+  panel_chat: {fileID: 0}
+  panel_name: {fileID: 0}
   keywordPanel: {fileID: 0}
   text_keyword: {fileID: 36443468450540009, guid: 621af904fa3c6a94e83e63990634e3cf, type: 3}
-  loadingBar: {fileID: 0}
-  btn_sendChat: {fileID: 0}
-  btn_Recommand: {fileID: 0}
+  userTypePanel: {fileID: 0}
+  btn_switchPanel: {fileID: 0}
